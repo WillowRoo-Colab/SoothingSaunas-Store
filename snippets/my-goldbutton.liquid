@@ -1,0 +1,35 @@
+{%- comment -%}
+  GOLD BUTTON SMALL SNIPPET
+
+  TO USE: {% render 'gold-button-small', label: 'Apply Filters', size: 'small', url: '#', type: 'submit' %}
+
+  OPTIONAL RENDER DETAILS (above): 
+   label: The button text
+   url: Optional (adds an onclick to link)
+   type: Use "submit" for forms
+   size: small (default), medium, or large
+
+{%- endcomment -%}
+
+<button
+  class="goldbutton {{ size | default: 'large' }}"
+  {% if url %}onclick="location.href='{{ url }}'"{% endif %}
+  {% if type %}type="{{ type }}"{% endif %}
+>
+  {{ label }}
+</button>
+
+<style>
+
+  .goldbutton { background-color: var(--goldbutton-bg, #c9a86a); color: var(--goldbutton-color, #151515);
+  font-family: var(--goldbutton-font, 'Cormorant Upright', serif); font-weight: var(--goldbutton-weight, 500);
+  border: none; border-radius: 36px;  cursor: pointer; transition: background-color 0.2s ease;
+  padding: var(--goldbutton-padding, 24px 72px); min-width: var(--goldbutton-min-width, auto); 
+  font-size: var(--goldbutton-font-size, 16px); }
+
+  .goldbutton:hover { background-color: #f0d48c; }
+  .goldbutton.small { --goldbutton-padding: 9px 20px; --goldbutton-font-size: 16px; }
+  .goldbutton.medium { --goldbutton-padding: 18px 40px; --goldbutton-font-size: 18px; }
+  .goldbutton.large { --goldbutton-padding: 27px 50px; --goldbutton-font-size: 22px; }
+
+</style>

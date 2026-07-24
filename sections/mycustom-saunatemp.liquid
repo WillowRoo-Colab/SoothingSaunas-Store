@@ -1,0 +1,358 @@
+<!-- // [Shopify Section] Custom Mysauna Product Template -->
+
+<section class="product-mysauna-template">
+  <!-- // [Main Product Image with Thumbnails & Zoom Modal Overlay] -->
+  <div class="product-media-gallery">
+    <div class="main-image-wrapper">
+      <img
+        src="{{ product.featured_image | img_url: 'master' }}"
+        alt="{{ product.title }}"
+        id="main-product-image"
+        class="zoom-trigger"
+      >
+    </div>
+    <div class="thumbnail-row">
+      {% for image in product.images %}
+        <img src="{{ image | img_url: '100x' }}" class="thumbnail-image" data-full="{{ image | img_url: 'master' }}">
+      {% endfor %}
+    </div>
+
+    <!-- Zoom Modal -->
+    <div id="my-zoomModal" class="zoom-modal">
+      <span class="close-modal">&times;</span>
+      <img class="zoom-modal-content" id="my-zoomModalImage">
+    </div>
+  </div>
+
+  <!-- // [Product Title Block] -->
+  <h1
+    class="product-title"
+    style="
+      font-family: {{ section.settings.title_font.family }};
+      font-weight: {{ section.settings.title_font_weight }};
+      color: {{ section.settings.title_color }};
+      font-style: {{ section.settings.title_italic | default: 'normal' }};
+    "
+  >
+    {{ product.title }}
+  </h1>
+
+  <!-- // [Collection Line Block] -->
+  {% if product.collections.size > 0 %}
+    <p
+      class="product-collection"
+      style="
+        font-family: {{ section.settings.collection_font.family }};
+        font-weight: {{ section.settings.collection_font_weight }};
+        color: {{ section.settings.collection_color }};
+        font-style: {{ section.settings.collection_italic | default: 'normal' }};
+      "
+    >
+      {{ product.collections.first.title }}
+    </p>
+  {% endif %}
+
+  <!-- // [Vendor Line Block] -->
+  <p
+    class="product-vendor"
+    style="
+      font-family: {{ section.settings.vendor_font.family }};
+      font-weight: {{ section.settings.vendor_font_weight }};
+      color: {{ section.settings.vendor_color }};
+      font-style: {{ section.settings.vendor_italic | default: 'normal' }};
+    "
+  >
+    {{ product.vendor }}
+  </p>
+
+  <!-- // [Description Block] -->
+  <div
+    class="product-description"
+    style="
+      font-family: {{ section.settings.description_font.family }};
+      font-weight: {{ section.settings.description_font_weight }};
+      color: {{ section.settings.description_color }};
+      font-style: {{ section.settings.description_italic | default: 'normal' }};
+    "
+  >
+    {{ product.description }}
+  </div>
+
+  <!-- // [Separator Line Block] -->
+  <hr
+    style="
+      border-top: {{ section.settings.separator_weight }} solid {{ section.settings.separator_color }};
+      width: {{ section.settings.separator_width }};
+      padding: {{ section.settings.separator_padding }};
+    "
+  >
+
+  <!-- // [Product Add-on Block Using Metaobjects/Metafields] -->
+  <div class="product-addons">
+    {% assign addons = product.metafields.custom.addons.value %}
+    {% if addons %}
+      <label>Add-ons:</label>
+      <select id="addon-select">
+        <option value="0" data-title="">None</option>
+        {% for addon in addons %}
+          <option value="{{ addon.price }}" data-title="{{ addon.title }}">
+            {{ addon.title }} (+{{ addon.price | money }})
+          </option>
+        {% endfor %}
+      </select>
+    {% endif %}
+  </div>
+
+  <!-- // [Add to Order Button via Snippet] -->
+  <div class="gold-button-wrapper">
+    {% render 'my-goldbuybutton' %}
+  </div>
+
+  <!-- // [Scrolling Text Line Block] -->
+  <div
+    class="scrolling-text"
+    style="
+      font-family: {{ section.settings.scroll_font.family }};
+      font-weight: {{ section.settings.scroll_font_weight }};
+      color: {{ section.settings.scroll_color }};
+      font-style: {{ section.settings.scroll_italic | default: 'normal' }};
+      padding: {{ section.settings.scroll_padding }};
+      animation-duration: {{ section.settings.scroll_speed }}s;
+    "
+  >
+    <marquee>
+      {% for message in section.blocks %}
+        {% if block.type == 'scrolling_message' %}
+          {{ block.settings.text }} &nbsp;&nbsp;&nbsp;
+        {% endif %}
+      {% endfor %}
+    </marquee>
+  </div>
+</section>
+
+<!-- // [Custom Styles] -->
+<style>
+  .product-media-gallery img { border-radius: 12px; }
+  .thumbnail-row { display: flex; gap: 8px; margin-top: 10px; }
+  .thumbnail-image { width: 60px; cursor: pointer; border-radius: 8px; }
+  .zoom-modal { display: none; position: fixed; z-index: 1000; padding-top: 60px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
+  .zoom-modal-content { margin: auto; display: block; max-width: 80%; border-radius: 10px; }
+  .close-modal { position: absolute; top: 20px; right: 45px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; }
+  .scrolling-text marquee { white-space: nowrap; }
+</style>
+
+<!-- // [Custom Script] -->
+<script>
+  // Zoom Modal Handler
+  const mainImg = document.getElementById('main-product-image');
+  const modal = document.getElementById('zoomModal');
+  const modalImg = document.getElementById('zoomModalImage');
+  const closeModal = document.querySelector('.close-modal');
+
+  mainImg.addEventListener('click', () => {
+    modal.style.display = 'block';
+    modalImg.src = mainImg.src;
+  });
+
+  closeModal.onclick = function () {
+    modal.style.display = 'none';
+  };
+
+  // Thumbnail Switch
+  document.querySelectorAll('.thumbnail-image').forEach((thumb) => {
+    thumb.addEventListener('click', () => {
+      mainImg.src = thumb.dataset.full;
+    });
+  });
+
+  // Add-on Price Update
+  const addonSelect = document.getElementById('addon-select');
+  if (addonSelect) {
+    addonSelect.addEventListener('change', function () {
+      const selected = addonSelect.options[addonSelect.selectedIndex];
+      const extraPrice = parseFloat(selected.value);
+      const addonTitle = selected.dataset.title;
+
+      // Update price display logic here if needed
+      // Pass addon info to cart via cart attributes or hidden input if needed
+    });
+  }
+</script>
+
+<!-- // [Shopify Section Schema] -->
+{% schema %}
+{
+  "name": "My Customn Sauna Template",
+
+  "settings": [
+    { "type": "font_picker", "id": "font_picker", "label": "Product Title Font", "default": "cormorant_n4" },
+    { "type": "text", "id": "title_color", "label": "Title Color" },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title Font Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "lighter", "label": "Light" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "title_italic",
+      "label": "Italic Title"
+    },
+
+    // Repeat similar settings for collection, vendor, description blocks
+    { "type": "font_picker", "id": "style", "label": "Product Title Font", "default": "cormorant_n4" },
+    {
+      "type": "text",
+      "id": "collection_color",
+      "label": "Collection Color"
+    },
+    {
+      "type": "select",
+      "id": "collection_font_weight",
+      "label": "Collection Font Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "collection_italic",
+      "label": "Italic Collection"
+    },
+
+    {
+      "type": "font_picker",
+      "id": "vendor_font",
+      "label": "Vendor Font",
+      "default": "lato_n4"
+    },
+    {
+      "type": "text",
+      "id": "vendor_color",
+      "label": "Vendor Color"
+    },
+    {
+      "type": "select",
+      "id": "vendor_font_weight",
+      "label": "Vendor Font Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "vendor_italic",
+      "label": "Italic Vendor"
+    },
+
+    {
+      "type": "font_picker",
+      "id": "description_font",
+      "label": "Description Font",
+      "default": "lato_n4"
+    },
+    {
+      "type": "text",
+      "id": "description_color",
+      "label": "Description Color"
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "label": "Description Font Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "description_italic",
+      "label": "Italic Description"
+    },
+
+    {
+      "type": "text",
+      "id": "separator_color",
+      "label": "Separator Color"
+    },
+    {
+      "type": "text",
+      "id": "separator_weight",
+      "label": "Separator Weight (e.g. 2px)"
+    },
+    {
+      "type": "text",
+      "id": "separator_width",
+      "label": "Separator Width (e.g. 100%)"
+    },
+    {
+      "type": "text",
+      "id": "separator_padding",
+      "label": "Separator Padding"
+    },
+
+    {
+      "type": "font_picker",
+      "id": "scroll_font",
+      "label": "Scrolling Text Font",
+      "default": "playfair_display_n4"
+    },
+    {
+      "type": "text",
+      "id": "scroll_color",
+      "label": "Scrolling Text Color"
+    },
+    {
+      "type": "select",
+      "id": "scroll_font_weight",
+      "label": "Scrolling Text Font Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "scroll_padding",
+      "label": "Scrolling Text Padding"
+    },
+    {
+      "type": "number",
+      "id": "scroll_speed",
+      "label": "Scrolling Speed (seconds)",
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "scroll_italic",
+      "label": "Italic Scroll"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "scrolling_message",
+      "name": "Scrolling Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Message Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mysauna Product Template",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

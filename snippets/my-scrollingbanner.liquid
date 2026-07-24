@@ -1,0 +1,55 @@
+{%- comment -%}
+SCROLLING TEXT BANNER
+CSS defined in mytheme.css
+
+TO USE: 
+  {% render 'my-scrollingbanner', messages: 'Free Shipping Across the U.S.,
+                                             Handcrafted Infrared Saunas,
+                                             Remember to pause and breathe deeply today,
+                                             Wellness begins within' | split: ',' %}
+  OR
+
+  {% render 'my-scrollingbanner', messages: shop.metafields.custom.shop_scrollingbanner.value %}
+  {% render 'my-scrollingbanner', messages: product.metafields.custom.product_scrollingbanner.value %}
+  {% render 'my-scrollingbanner', messages: collection.metafields.custom.collection_scrollingbanner.value %}
+  {% render 'my-scrollingbanner', messages: blogpost.metafields.custom.blogpost_scrollingbanner.value %}
+  {% render 'my-scrollingbanner', messages: blogs.metafields.custom.blogs_scrollingbanner.value %}
+  {% render 'my-scrollingbanner', messages: order.metafields.custom.orders_scrollingbanner.value %}
+
+  EXAMPLE RENDER WITH SCROLL SPPED AND FADE
+    {% render 'my-scrollingbanner', messages: shop.metafields.custom.banner_messages,
+      scroll_speed: '18s',
+      fade_edges: true %}
+
+  {%- endcomment -%}
+<div class="my-scrollingbanner {% if fade_edges %}my-scrollingbanner-fade{% endif %}"
+     style="--scroll-spacing: {{ spacing | default: '16px' }};">
+  <div class="my-scrollingbanner-inner">
+    {% for line in messages %}
+      <span class="scroll-item"
+            style="color: #c9a86a; font-family: 'Playfair Display', serif;">
+        {{ line }}
+      </span>
+      {% unless forloop.last %}
+        <span class="scroll-divider">
+           <img src="{{ 'gold-fleurdelis.png' | asset_url }}" alt="Divider" />
+        </span>
+        <!-- DIVIDER OPTION <span class="scroll-divider" style="color: #c9a86a;">⏛✨⏛</span> -->
+      {% endunless %}
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .scroll-divider {
+  display: inline-block;
+  margin: 0 20px;
+  vertical-align: middle;
+}
+
+.scroll-divider img {
+  height: 26px;        /* adjust size as needed */
+  width: auto;
+  display: inline-block;
+}
+</style>

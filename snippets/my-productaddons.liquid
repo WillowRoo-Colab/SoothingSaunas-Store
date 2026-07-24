@@ -1,0 +1,136 @@
+{%- comment -%}
+  SOOTHING SAUNAS – PRODUCT ADD-ON CHECKBOXES
+  ---------------------------------------------------------------------
+  TO USE:
+  - Render with:  {% render 'product-addons' %}
+
+  PURPOSE:
+  - Displays optional add-on product checkboxes under the main product
+  - Pulls data dynamically from metafields:
+      → product.metafields.custom.addons_enabled (Boolean - True/False)
+      → product.metafields.custom.addons (List of product references)
+
+  NOTES:
+  - Only shows when "addons_enabled" is true AND at least one product is selected
+  - Each checked add-on is added to the cart when main product is added
+  - Edit styling in main theme CSS (addon-checkbox-group, addon-label, addon-link)
+  ---------------------------------------------------------------------
+
+
+{% if product.metafields.custom.addons and product.metafields.custom.addons.size > 0 %}
+  <div class="addon-checkbox-group">
+    {% for addon in product.metafields.custom.addons %}
+      <label class="addon-label">
+        <input
+          type="checkbox"
+          class="addon-checkbox"
+          name="addon_{{ addon.handle }}"
+          value="{{ addon.first_available_variant.id }}"
+          data-variant-id="{{ addon.first_available_variant.id }}"
+          data-price="{{ addon.first_available_variant.price | divided_by: 100.0 }}"
+          data-addon-quantity="1"
+        >
+        Add <a href="{{ addon.url }}" target="_blank" class="addon-link">{{ addon.title }}</a> (
+        {{- addon.price | money -}}
+        )
+      </label>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+{%-  endcomment -%}
+
+{%  comment %}
+  PRODUCT ADD-ON CHECKBOX LOGIC
+
+  TO USE: (place inside the buy button 'form' block to function correctly)
+    {% section 'my-productaddons' %}
+
+{%  endcomment %}
+
+<div class="addons-block-wrapper">
+
+  {% if product.metafields.custom.addon_items == blank %}
+    <p class="ss-addon-empty">No add-ons available for this product.</p>
+  {% else %}
+    <div class="addons-block-title">
+      {{ addon_header | default: "Enhance Your Experience" }}
+    </div>
+
+    <div class="addons-grid">
+      {% for addon in product.metafields.custom.addon_items.value %}
+        {% assign variant = addon.variant.value %}
+        {% assign base_price = addon.price | default: variant.price %}
+        {% assign discount = addon.discount | default: 0 %}
+        {% assign discount_amount = base_price | times: discount | divided_by: 100 %}
+        {% assign final_price = base_price | minus: discount_amount %}
+
+        <label class="addon-card">
+          <div class="addon-inline-row">
+            {% render 'my-flamecheckbox',
+              id: 'addon-' | append: variant.id,
+              product_id: variant.id,
+              addon_price: final_price,
+              height: '35px'
+            %}
+
+            <span class="addon-title">
+              {{ addon.label | default: variant.product.title }}
+            </span>
+
+            <span class="addon-price-box">
+              {% if discount > 0 and addon.price != blank %}
+                <span class="addon-price-original">{{ base_price | money }}</span>
+                <span class="addon-price-final">{{ final_price | money }}</span>
+              {% else %}
+                <span class="addon-price-final">{{ base_price | money }}</span>
+              {% endif %}
+            </span>
+          </div>
+        </label>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>
+
+<script>
+(function () {
+  function initAddonPriceUpdater() {
+    var priceEl = document.querySelector('.ss-price-current');
+    if (!priceEl) return;
+
+    var basePriceCents = parseInt(priceEl.getAttribute('data-base-price'), 10);
+    if (isNaN(basePriceCents)) return;
+
+    function formatMoney(cents) {
+      return '$' + (cents / 100).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function updateTotal() {
+      var total = basePriceCents;
+      document.querySelectorAll('.addon-checkbox').forEach(function (cb) {
+        if (cb.checked) {
+          var addon = parseInt(cb.getAttribute('data-addon-price'), 10);
+          if (!isNaN(addon)) total += addon;
+        }
+      });
+      priceEl.textContent = formatMoney(total);
+    }
+
+    document.querySelectorAll('.addon-checkbox').forEach(function (cb) {
+      cb.addEventListener('change', updateTotal);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAddonPriceUpdater);
+  } else {
+    initAddonPriceUpdater();
+  }
+})();
+</script>

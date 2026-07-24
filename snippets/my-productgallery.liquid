@@ -1,0 +1,135 @@
+{% comment %}
+SOOTHING SAUNAS — PRODUCT GALLERY
+
+TO RENDER, USE BOTH: 
+    {% section 'my-productgallery' %}
+    {% render 'my-zoommodal' %}
+     
+{% endcomment %}
+
+
+<div class="ss-gallery" id="soothingsaunas-{{ section.id }}">
+
+  <!-- ===== MAIN IMAGE ===== -->
+  <div class="ss-main-media">
+    {% assign first_media = product.media | first %}
+    {% if first_media %}
+      <img
+        src="{{ first_media.preview_image | image_url: width: 2000 }}"
+        class="ss-main-image"
+        alt="{{ first_media.alt | escape }}"
+        onclick="openZoomModal(this.src)"
+      >
+    {% endif %}
+  </div>
+
+  <!-- ===== THUMBNAILS ===== -->
+  {% if product.media.size > 1 %}
+    <div class="ss-thumbs-wrapper">
+      <button class="ss-scroll-arrow left" type="button">‹</button>
+
+      <div class="ss-thumbs">
+        {% for media in product.media %}
+          <button
+            type="button"
+            class="ss-thumb {% if forloop.first %}active{% endif %}"
+          >
+            <img
+              src="{{ media.preview_image | image_url: width: 200 }}"
+              class="ss-thumb-img"
+              alt="{{ media.alt | escape }}"
+            >
+          </button>
+        {% endfor %}
+      </div>
+
+      <button class="ss-scroll-arrow right" type="button">›</button>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+/* ===== Main Media ===== */
+#soothingsaunas-{{ section.id }} 
+.ss-main-media { position: relative; width: 78%; margin: 0 auto; aspect-ratio: 4/3; border-radius: 14px !important;
+  background-color: #151515;  overflow: hidden; display: flex; justify-content: center; align-items: center; cursor: zoom-in; }
+
+#soothingsaunas-{{ section.id }} 
+.ss-main-image { max-width: 100%; max-height: 100%; object-fit: contain; transition: opacity 0.3s ease, transform 0.25s ease; border-radius: 14px !important; }
+
+#soothingsaunas-{{ section.id }} 
+.ss-main-image:hover { transform: scale(1.015); }
+
+/* ===== Thumbnails ===== */
+#soothingsaunas-{{ section.id }} 
+.ss-thumbs-wrapper { position: relative; width: 78%; margin: 12px auto 0; }
+
+#soothingsaunas-{{ section.id }} 
+.ss-thumbs { display: flex; gap: 10px; overflow-x: auto; padding: 8px; }
+
+#soothingsaunas-{{ section.id }} 
+.ss-thumb { flex: 0 0 calc(16.6% - 8px); background: none; border: none; cursor: pointer; }
+
+#soothingsaunas-{{ section.id }} 
+.ss-thumb-img { width: 100%; height: 70px; object-fit: cover; border-radius: 10px; }
+
+#soothingsaunas-{{ section.id }} 
+.ss-thumb.active .ss-thumb-img { box-shadow: 0 0 0 3px #C9A86A; }
+
+/* ===== Arrows ===== */
+#soothingsaunas-{{ section.id }} 
+.ss-scroll-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(25,25,25,0.7); border: none; 
+  color: #C9A86A; font-size: 24px; padding: 8px; border-radius: 50%; cursor: pointer; }
+
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow.left { left: -28px; }
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow.right { right: -28px; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const gallery = document.getElementById('soothingsaunas-{{ section.id }}');
+  if (!gallery) return;
+
+  const mainMedia = gallery.querySelector('.ss-main-media');
+  const thumbs = gallery.querySelectorAll('.ss-thumb');
+  const thumbsWrap = gallery.querySelector('.ss-thumbs');
+  const left = gallery.querySelector('.ss-scroll-arrow.left');
+  const right = gallery.querySelector('.ss-scroll-arrow.right');
+
+ thumbs.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const img = btn.querySelector('img');
+    if (!img) return;
+
+    const newSrc = img.src.split('?')[0] + '?width=2000';
+
+    mainMedia.innerHTML = `
+      <img
+        src="${newSrc}"
+        class="ss-main-image"
+        alt=""
+        onclick="openZoomModal(this.src)">
+    `;
+
+    // Re-enable zoom modal for the new image
+    setTimeout(() => {
+      const newMainImage = mainMedia.querySelector('.ss-main-image');
+      if (newMainImage && typeof openZoomModal === 'function') {
+        newMainImage.onclick = () => openZoomModal(newMainImage.src);
+      }
+    }, 50);
+
+    // Highlight active thumb
+    thumbs.forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+  if (left && right && thumbsWrap) {
+    left.onclick = () => thumbsWrap.scrollBy({ left: -200, behavior: 'smooth' });
+    right.onclick = () => thumbsWrap.scrollBy({ left: 200, behavior: 'smooth' });
+  }
+});
+</script>
+
+<!-- KEEP YOUR EXISTING ZOOM MODAL SCRIPT BELOW (UNCHANGED) -->

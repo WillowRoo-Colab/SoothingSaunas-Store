@@ -1,0 +1,39 @@
+{% comment %}
+
+SOOTHING SAUNAS — UNIVERSAL SEPARATOR LINE (Responsive):
+- Each separator instance has a unique class name like .sep-1234567890-abcd.
+- That guarantees its responsive CSS block only affects that specific separator, avoids CSS caching quirks.
+- The inline <style> will always be read because it’s scoped and inserted directly beside its element.
+
+USE: {% render 'my-separatorline' %}
+
+{% endcomment %}
+
+{% assign sep_color = color | default: '#a08119' %}
+{% assign sep_thickness = thickness | default: 2 %}
+{% assign sep_width = width | default: '99%' %}
+{% assign sep_opacity = opacity | default: 0.3 %}
+{% assign sep_margin = margin | default: '20px auto' %}
+{% assign sep_mobile_width = mobile_width | default: '80%' %}
+
+{% assign unique_id = 'sep-' | append: section.id | append: '-' | append: block.id | default: 'global' %}
+
+<div class="my-separatorline {{ unique_id }}"
+  style="
+    display: block;
+    border-bottom: solid {{ sep_thickness }}px {{ sep_color }};
+    width: {{ sep_width }};
+    max-width: 100%;
+    margin: {{ sep_margin }};
+    opacity: {{ sep_opacity }};
+    box-sizing: border-box;
+  ">
+</div>
+
+<style>
+@media (max-width: 768px) {
+  .{{ unique_id }} {
+    width: {{ sep_mobile_width }} !important;
+  }
+}
+</style>

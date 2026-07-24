@@ -1,0 +1,69 @@
+{%  comment %}
+FLAME CHECKBOX LIQUID
+
+    TO USE:  {% render 'my-flamecheckbox',
+                id: 'addon-' | append: variant.id,
+                product_id: variant.id,
+                addon_price: final_price,
+                height: '50px'
+            %}
+
+{% endcomment %}
+
+{% assign input_id = id | default: 'flame-checkbox-' | append: product_id %}
+
+<input
+  type="checkbox"
+  id="{{ input_id }}"
+  class="addon-checkbox visually-hidden"
+  data-product-id="{{ product_id }}"
+  data-addon-price="{{ addon_price }}"
+>
+
+<label for="{{ input_id }}" class="flame-checkbox-label" style="height: {{ height | default: '40px' }};">
+  <svg viewBox="0 0 24 24" class="flame-svg" aria-hidden="true" style="height: {{ height | default: '800px' }};">
+    <path d="M12 2C10 5 7 7 7 11C7 14.3 9.7 17 13 17C16.3 17 19 14.3 19 11C19 7 16 5 14 2C13 3.5 13 4 12 5C12 4.5 12 3.5 12 2Z"/>
+  </svg>
+</label>
+
+
+<style>
+.flame-checkbox-wrapper {
+  --flame-outline: #c9a86a;
+  --flame-fill-unchecked: #ffffff;
+  --flame-fill-checked: #faf3e0;
+  --checkbox-height: 40px;
+}
+
+.flame-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  height: var(--checkbox-height);
+}
+
+.flame-checkbox-input {
+  display: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.flame-checkbox-label .flame-svg {
+  fill: #ffffff;
+  stroke: #c9a86a;
+  stroke-width: 1.5;
+  transition: all 0.1s ease;
+}
+
+/* Works even when the input and label aren't siblings */
+input[type="checkbox"].addon-checkbox:checked + label.flame-checkbox-label .flame-svg,
+input[type="checkbox"].addon-checkbox:checked ~ label.flame-checkbox-label .flame-svg {
+  fill: #F3500A;
+  stroke-width: 1.5;
+}
+
+</style>

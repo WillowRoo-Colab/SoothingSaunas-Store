@@ -1,0 +1,80 @@
+{%- comment -%}
+  SOOTHING SAUNAS — ADD-ONS BLOCK (METAOBJECT-DRIVEN VERSION)
+  ----------------------------------------------------------------
+  • Pulls add-ons from product.metafields.custom.addon_items
+  • Each metaobject entry includes:
+       - product (product reference)
+       - product_variant_id (text or number)
+       - price (number)
+       - discount (number %)
+  • Displays an add-on card with:
+       - Label (product title, or metaobject label fallback)
+       - Price and discounted price
+       - Checkbox to add/remove from cart
+{%- endcomment -%}
+
+{% assign addon_list = product.metafields.custom.addon_items %}
+
+<div class="addons-block-wrapper">
+
+  {% if addon_list == blank %}
+    <p class="ss-addon-empty">No add-ons available for this product.</p>
+  {% else %}
+
+    <div class="addons-block-title">
+      {{ block.settings.addon_title | default: "Enhance Your Sauna" }}
+    </div>
+
+    <div class="addons-grid">
+
+      {% for addon_ref in addon_list.value %}
+        {% assign addon_obj = addon_ref %}
+
+        {%- assign addon_product = addon_obj.product.value -%}
+        {%- assign variant_id = addon_obj.product_variant_id | default: addon_product.variants.first.id -%}
+        {%- assign price = addon_obj.price | default: addon_product.price | divided_by: 100.0 -%}
+        {%- assign discount = addon_obj.discount | default: 0 -%}
+
+        {% comment %}
+          price - (price * discount/100)
+        {% endcomment %}
+        {% assign discount_amount = price | times: discount | divided_by: 100 %}
+        {% assign final_price = price | minus: discount_amount %}
+
+        <label class="addon-card">
+
+          <input 
+            type="checkbox"
+            class="addon-checkbox"
+            data-addon-variant="{{ variant_id }}"
+            data-addon-price="{{ final_price }}"
+            data-addon-original="{{ price }}"
+            data-addon-discount="{{ discount }}"
+          >
+
+          <div class="addon-content">
+            
+            <div class="addon-title">
+              {{ addon_product.title }}
+            </div>
+
+            <div class="addon-price-box">
+              {% if discount > 0 %}
+                <span class="addon-price-original">{{ price | money }}</span>
+                <span class="addon-price-final">{{ final_price | money }}</span>
+                <span class="addon-discount-tag">-{{ discount }}%</span>
+              {% else %}
+                <span class="addon-price-final">{{ price | money }}</span>
+              {% endif %}
+            </div>
+
+          </div>
+
+        </label>
+
+      {% endfor %}
+
+    </div>
+
+  {% endif %}
+</div>

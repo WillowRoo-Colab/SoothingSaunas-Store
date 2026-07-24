@@ -1,0 +1,519 @@
+{%- comment -%}
+SOOTHING SAUNAS – CUSTOM PRODUCT TEMPLATE (FINAL BUILD 2025)
+Features:
+• Stable working gallery (untouched)
+• Add-on checkboxes above price row
+• Dynamic pricing and bundled Add to Cart
+• Centered Product Specs link (new tab)
+• Tightened price/button spacing
+{%- endcomment -%}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<section id="soothingsaunas-{{ section.id }}" class="soothingsaunas-product">
+
+  <!-- ========================================= -->
+  <!--           PRODUCT GRID WRAPPER            -->
+  <!-- ========================================= -->
+  <div class="ss-container">
+    <div class="ss-product-grid">
+
+      <!-- ========================================= -->
+      <!--         PRODUCT GALLERY SECTION           -->
+      <!-- ========================================= -->
+
+      <!-- Gallery untouched per user instruction -->
+      <div class="ss-gallery">
+        {% if product.media.size > 0 %}
+          <div class="ss-main-media">
+            {% assign featured = product.media.first %}
+            {% if featured %}
+              {{ featured | image_url: width: 1600 | image_tag: class: 'ss-main-image', loading: 'eager', widths: '600,1000,1400,1600,2000' }}
+            {% endif %}
+          </div>
+
+          {% if product.media.size > 1 %}
+            <div class="ss-thumbs-wrapper">
+              <button class="ss-scroll-arrow left" aria-label="Scroll left">&#10094;</button>
+              <div class="ss-thumbs">
+                {% for media in product.media %}
+                  <button type="button" class="ss-thumb" data-media-id="{{ media.id }}">
+                    {{ media | image_url: width: 200 | image_tag: class: 'ss-thumb-img', loading: 'lazy', widths: '100,150,200' }}
+                  </button>
+                {% endfor %}
+              </div>
+              <button class="ss-scroll-arrow right" aria-label="Scroll right">&#10095;</button>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+         {% render 'my-zoommodal' %}
+
+      <!-- END PRODUCT GALLERY SECTION -->
+
+      <!-- ========================================= -->
+      <!--         PRODUCT INFO SECTION              -->
+      <!-- ========================================= -->
+      <div class="ss-info">
+
+        {% if section.blocks.size > 0 %}
+          {% for block in section.blocks %}
+            {% case block.type %}
+
+              {% when 'vendor' %}
+              <!-- Vendor Line -->
+              <div class="ss-vendor" {{ block.shopify_attributes }}>
+                <span class="vendor-prefix">by </span>
+                <a href="{{ product.vendor | url_for_vendor }}" class="custom-sauna-vendor">{{ product.vendor }}</a>
+              </div>
+
+              {% when 'title' %}
+              <!-- Title and Collection -->
+              {%- assign heading_tag = block.settings.heading_tag | default: 'h1' -%}
+              <{{ heading_tag }} class="product-title custom-sauna-title" {{ block.shopify_attributes }}>
+                {{ product.title }}
+              </{{ heading_tag }}>
+              {% if section.settings.show_collection_badge and product.collections.size > 0 %}
+                <p class="ss-collection-line"><em>{{ section.settings.collection_line_prefix | default: 'from our collection' }}</em></p>
+              {% endif %}
+
+              {% when 'description' %}
+
+              <!-- ========================================= -->
+              <!--      DESCRIPTION + METAFIELDS BLOCK       -->
+              <!-- ========================================= -->
+              {% if product.description != blank %}
+                <div class="ss-description" {{ block.shopify_attributes }}>
+                  {{ product.description }}
+                </div>
+              {% endif %}
+
+              {% if section.settings.second_description_line != blank %}
+                <p class="ss-description-sub">{{ section.settings.second_description_line }}</p>
+              {% endif %}
+
+              {% if product.metafields.custom.personcap %}
+                <p class="ss-capacity"><b>Seating Capacity</b>: up to <b>{{ product.metafields.custom.personcap }}</b> people</p>
+              {% endif %}
+
+              {% if product.metafields.custom.heat_style %}
+                <p class="ss-heatsource"><b>Heating Style</b>: {{ product.metafields.custom.heat_style }}</p>
+              {% endif %}
+
+              {% if product.metafields.custom.eheater_options %}
+                <div class="ss-eheater-options">
+                  <b><u>Available Heater Options</u></b>:
+                  <ul>
+                    {% for option in product.metafields.custom.eheater_options %}
+                      <li>{{ option }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+
+              {% if product.metafields.custom.productspecs %}
+                <p class="ss-productspecs">
+                  <a href="{{ product.metafields.custom.productspecs | file_url }}" target="_blank">
+                    <b><u>View Product Specifications</u></b>
+                  </a>
+                </p>
+              {% endif %}
+              <!-- END DESCRIPTION + METAFIELDS BLOCK -->
+
+              {% when 'separator' %}
+                {% render 'my-separatorline' %}
+
+              {% when 'price' %}
+              <!-- ========================================= -->
+              <!--       PURCHASE / ADD-ONS SECTION          -->
+              <!-- ========================================= -->
+              <div class="ss-purchase-section">
+
+                <!--          Add-on Checkboxes Layout         -->
+                <!-- ========================================= -->
+                <div class="ss-addons">
+                  {% render 'my-productaddons' %}
+                </div>
+
+                <!--           Price + Add to Order Row        -->
+                <!-- ========================================= -->
+                <div class="ss-purchase-row">
+                  <div class="ss-price" {{ block.shopify_attributes }}>
+                    <span class="ss-price-current" id="dynamic-price"
+                          style="font-size: {{ section.settings.price_font_size }};
+                                 color: {{ section.settings.price_color }};">
+                      {{ current_variant.price | money }}
+                    </span>
+                    {% if current_variant.compare_at_price > current_variant.price %}
+                      <span class="ss-price-compare">{{ current_variant.compare_at_price | money }}</span>
+                    {% endif %}
+                  </div>
+
+                  <div class="ss-buy" {{ block.shopify_attributes }}>
+                    {%- assign form_id = 'ss-form-' | append: section.id -%}
+                    {%- form 'product', product, id: form_id, class: 'ss-product-form', novalidate: 'novalidate' -%}
+                      <input type="hidden" name="id" value="{{ current_variant.id }}">
+                      {% render 'my-goldbuybutton', button_label: 'Add to Order' %}
+                    {%- endform -%}
+                  </div>
+                </div>
+              </div>
+              <!-- END PURCHASE / ADD-ONS SECTION -->
+
+            {% endcase %}
+          {% endfor %}
+        {% endif %}
+      </div> <!-- END .ss-info -->
+    </div> <!-- END .ss-product-grid -->
+  </div> <!-- END .ss-container -->
+
+  <!-- ========================================= -->
+  <!--             STYLE SECTION                 -->
+  <!-- ========================================= -->
+  <style>
+    /* === Layout Containers === */
+    #soothingsaunas-{{ section.id }} .ss-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: clamp(60px, 8vw, 120px) clamp(24px, 5vw, 80px);
+      box-sizing: border-box;
+    }
+
+    .ss-product-grid {
+      display: grid;
+      grid-template-columns: 65% 35%;
+      column-gap: 32px;
+      align-items: start;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* === Vendor / Titles === */
+    .custom-sauna-title {
+      font-family: 'Cormorant Upright', serif;
+      color: #ece3cb;
+      font-weight: 600;
+      font-size: 30px;
+      margin-top: 8px;
+    }
+
+    .custom-sauna-vendor {
+      font-family: 'Lato', sans-serif;
+      color: #ece3cb;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .ss-collection-line {
+      font-family: 'Cormorant Upright', serif;
+      font-size: 22px;
+      color: #c9a86a;
+      font-style: italic;
+      margin-left: 24px;
+    }
+
+    /* === Vendor Line Alignment === */
+    @media (min-width: 769px){
+      #soothingsaunas-{{ section.id }} .ss-vendor {
+        margin-left: 64px;
+        display: inline-flex;
+        align-items: baseline;
+        gap: 4px;
+      }
+    }
+    @media (max-width: 768px){
+      #soothingsaunas-{{ section.id }} .ss-vendor {
+        margin-left: 0;
+        justify-content: center;
+        text-align: center;
+      }
+    }
+
+    /* === Description + Metafields === */
+    .ss-description {
+      font-family: 'Lato', sans-serif;
+      color: #e8e1c4;
+      font-size: 16px;
+      line-height: 1.55;
+      margin: 20px 0 36px;
+    }
+
+    .ss-description-sub {
+      font-family: 'Lato', sans-serif;
+      color: #e0dbc5;
+      font-size: 14px;
+      opacity: .85;
+      margin-bottom: 32px;
+    }
+
+    .ss-capacity, .ss-heatsource, .ss-eheater-options, .ss-productspecs {
+      font-family: 'Lato', sans-serif;
+      color: #e8e1c4;
+      font-size: 16px;
+      letter-spacing: .3px;
+      opacity: .9;
+    }
+
+    .ss-productspecs {
+      text-align: center;
+      margin-top: 16px;
+    }
+    .ss-productspecs a {
+      color: #e8e1c4;
+      text-decoration: none;
+    }
+    .ss-productspecs a:hover {
+      color: #C9A86A;
+    }
+
+    /* === Add-on Checkboxes === */
+    .ss-addons {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 12px;
+    }
+
+    .ss-addons input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .ss-addons label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: #e8e1c4;
+      font-family: 'Lato', sans-serif;
+      font-size: 15px;
+    }
+
+    /* === Price + Button Row === */
+    .ss-purchase-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: -4px; /* tightened by 20px from original spacing */
+    }
+
+    /* === Mobile Adjustments === */
+    @media (max-width: 768px){
+      .ss-product-grid { grid-template-columns: 1fr; text-align: center; }
+      .ss-purchase-row { flex-direction: column; align-items: center; }
+      .ss-addons { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; } /* <-- centers the entire add-on variant block */
+      .ss-addons label { margin-bottom: 8px; }
+    }
+  </style>
+
+  <!-- ========================================= -->
+  <!--              SCRIPT SECTION               -->
+  <!-- ========================================= -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('soothingsaunas-{{ section.id }}');
+      if (!root) return;
+
+      /*              DYNAMIC PRICE LOGIC          */
+      /* ========================================= */
+      const priceDisplay = root.querySelector('#dynamic-price');
+      const basePrice = {{ current_variant.price | divided_by: 100.0 }};
+      const addonCheckboxes = root.querySelectorAll('.ss-addons input[type="checkbox"]');
+
+      function parseAddonPrice(cb){
+        if (cb.dataset.price) return parseFloat(cb.dataset.price);
+        if (cb.dataset.priceCents) return parseInt(cb.dataset.priceCents,10)/100;
+        if (cb.dataset.money) return parseFloat(cb.dataset.money.replace(/[^0-9.]/g,''));
+        return 0;
+      }
+
+      function formatMoney(amount){
+        return new Intl.NumberFormat('en-US',{ style:'currency', currency:'USD' }).format(amount);
+      }
+
+      function updatePrice(){
+        let total = basePrice;
+        addonCheckboxes.forEach(cb => { if (cb.checked) total += parseAddonPrice(cb); });
+        if (priceDisplay) priceDisplay.textContent = formatMoney(total);
+      }
+
+      addonCheckboxes.forEach(cb => cb.addEventListener('change', updatePrice));
+      updatePrice();
+
+
+      /*            CART SUBMISSION LOGIC          */
+      /* ========================================= */
+      const form = root.querySelector('.ss-product-form');
+      if (form){
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const mainVariantId = form.querySelector('input[name="id"]')?.value;
+          const items = [];
+          if (mainVariantId) items.push({ id: Number(mainVariantId), quantity: 1 });
+
+          addonCheckboxes.forEach(cb => {
+            if (cb.checked){
+              const addonVar = cb.dataset.variantId || cb.value;
+              if (addonVar && /^\d+$/.test(addonVar)){
+                items.push({ id: Number(addonVar), quantity: 1 });
+              } else {
+                items[0] = items[0] || { id: Number(mainVariantId), quantity: 1, properties: {} };
+                items[0].properties = items[0].properties || {};
+                items[0].properties[cb.name || 'Add-on'] = 'Selected';
+              }
+            }
+          });
+
+          try{
+            const res = await fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ items })
+            });
+            if (!res.ok) throw new Error('Cart add failed');
+            window.location.href = '/cart';
+          }catch(err){
+            console.error(err);
+            form.submit();
+          }
+        });
+      }
+
+      /*    SCROLL ARROWS + THUMBNAILS (Unchanged) */
+      /* ========================================= */
+      const thumbs = root.querySelectorAll('.ss-thumb');
+      const mainMedia = root.querySelector('.ss-main-media');
+      const thumbsWrap = root.querySelector('.ss-thumbs');
+      const leftArrow = root.querySelector('.ss-scroll-arrow.left');
+      const rightArrow = root.querySelector('.ss-scroll-arrow.right');
+
+      if (thumbs.length){
+        thumbs.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const img = btn.querySelector('img');
+            if (!img || !mainMedia) return;
+            const base = img.src.split('?')[0];
+            const newSrc = `${base}?width=2000`;
+            mainMedia.innerHTML = `<img src="${newSrc}" class="ss-main-image" alt="{{ product.title | escape }}" style="cursor: zoom-in;">`;
+            setTimeout(() => {
+              const newMain = mainMedia.querySelector('.ss-main-image');
+              if (newMain) enableZoomModal(newMain);
+            }, 50);
+            thumbs.forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+      }
+
+      if (leftArrow && rightArrow && thumbsWrap){
+        leftArrow.addEventListener('click', () => thumbsWrap.scrollBy({ left: -200, behavior: 'smooth' }));
+        rightArrow.addEventListener('click', () => thumbsWrap.scrollBy({ left: 200, behavior: 'smooth' }));
+      }
+
+      /*              ZOOM MODAL HANDLER           */
+      /* ========================================= */
+      function enableZoomModal(imgEl){
+        if (!imgEl) return;
+        imgEl.onclick = () => openZoomModal(imgEl.src);
+      }
+
+      const mainImg = root.querySelector('.ss-main-image');
+      setTimeout(() => { if (mainImg) enableZoomModal(mainImg); }, 50);
+    });
+  </script>
+</section>
+
+<!-- ========================================= -->
+<!--                   SCHEMA                  -->
+<!-- ========================================= -->
+
+{% schema %}
+{
+  "name": "mySauna Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "custom_header_text",
+      "label": "Custom Header",
+      "default": "Your headline here"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_separator",
+      "label": "Show top separator?",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "description_style",
+      "label": "Description Style",
+      "options": [
+        { "value": "standard", "label": "Standard" },
+        { "value": "luxury", "label": "Luxury Glow" }
+      ],
+      "default": "standard"
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "product_description",
+      "name": "Product Description",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "custom_addons",
+      "name": "Add-On Options",
+      "settings": [
+        {
+          "type": "text",
+          "id": "addons_title",
+          "label": "Section Title",
+          "default": "Customize Your Sauna"
+        }
+      ]
+    },
+    {
+      "type": "separator",
+      "name": "Separator Line",
+      "settings": [
+        {
+          "type": "select",
+          "id": "separator_style",
+          "label": "Style",
+          "options": [
+            { "value": "thin", "label": "Thin" },
+            { "value": "thick", "label": "Thick" },
+            { "value": "gold", "label": "Gold Accent" }
+          ],
+          "default": "gold"
+        }
+      ]
+    },
+    {
+      "type": "text_block",
+      "name": "Custom Text Block",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text_content",
+          "label": "Text Content"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Soothing Saunas Custom Layout",
+      "blocks": [
+        { "type": "product_description" },
+        { "type": "separator" },
+        { "type": "custom_addons" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,103 @@
+{%-comment-%}
+USE THESE OPTIONAL ATTRIBUTES WHEN NEEDING TO MAKE BUTTON A LINK, OR OTHER FUNCTION. 
+
+Button with link	{% render 'custom-gold-button', button_label: 'Shop Collection', button_url: '/collections/all' %}
+Button with custom ID	{% render 'custom-gold-button', button_label: 'Submit Inquiry', button_id: 'inquiry-btn' %}
+Button with custom class	{% render 'custom-gold-button', button_label: 'Learn More', button_class: 'large-btn' %}
+
+{%- endcomment %}
+
+{%- assign button_text = button_label | default: 'Click Here' -%}
+{%- assign button_id_attr = button_id | default: '' -%}
+{%- assign button_class_attr = button_class | default: '' -%}
+{%- assign button_type_attr = button_type | default: 'button' -%}
+{%- assign button_url_attr = button_url | default: '' -%}
+
+{% if button_url_attr != blank %}
+  <a href="{{ button_url_attr }}" id="{{ button_id_attr }}" class="ss-cta {{ button_class_attr }}">
+    <span class="ss-cta__label">{{ button_text }}</span>
+    <span class="ss-cta__border"></span>
+  </a>
+{% else %}
+  <button id="{{ button_id_attr }}" class="ss-cta {{ button_class_attr }}" type="{{ button_type_attr }}">
+    <span class="ss-cta__label">{{ button_text }}</span>
+    <span class="ss-cta__border"></span>
+  </button>
+{% endif %}
+
+<style>
+/* ===============================
+   Custom Animated Gold Button (Reusable Sitewide)
+   =============================== */
+.ss-cta {
+  position: relative;
+  display: inline-block;
+  padding: 0.75em 2.5em;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #C9A86A;
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: color 0.3s ease, background 0.3s ease;
+  text-decoration: none;
+  z-index: 1;
+}
+
+.ss-cta__border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #C9A86A;
+  border-radius: 20px;
+  z-index: -1;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Shimmer Band */
+.ss-cta__border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(201,168,106,0) 0%,
+    rgba(201,168,106,0.95) 80%,
+    rgba(201,168,106,0) 100%
+  );
+  transform: skewX(-20deg);
+}
+
+/* Animate shimmer on hover */
+.ss-cta:hover .ss-cta__border::before {
+  animation: shimmerSweep 1.1s forwards;
+}
+
+@keyframes shimmerSweep {
+  0% { left: -75%; }
+  100% { left: 125%; }
+}
+
+/* Background + Text */
+.ss-cta:hover {
+  color: #151515;
+}
+
+.ss-cta:hover .ss-cta__border {
+  background: rgba(201,168,106,0.8);
+}
+
+.ss-cta:active .ss-cta__border {
+  border-color: #B38E56;
+  background: rgba(179,142,86,0.75);
+}
+</style>

@@ -1,0 +1,63 @@
+  /* ===========================
+   Hot Stone Hover Effect
+   =========================== */
+
+/* Target product cards in product grids */ 
+.product-grid .card,
+.collection-list .card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hot stone glow overlay */
+.product-grid .card::before,
+.collection-list .card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Hot stone color gradient */
+  background: radial-gradient(circle at center,
+    rgba(210, 105, 30, 0.25) 0%,   /* warm orange-brown */
+    rgba(0, 0, 0, 0.35) 100%       /* deep shadow edges */
+  );
+
+  opacity: 0; /* hidden by default */
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+/* Subtle lift & shadow */
+.product-grid .card:hover,
+.collection-list .card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Reveal the hot stone glow on hover */
+.product-grid .card:hover::before,
+.collection-list .card:hover::before {
+  opacity: 1;
+}
+
+/* Smooth zoom-in of product image */
+.product-grid .card img,
+.collection-list .card img {
+  transition: transform 0.4s ease;
+  z-index: 1;
+}
+
+.product-grid .card:hover img,
+.collection-list .card:hover img {
+  transform: scale(1.05);
+}
+/* ===========================
+   END: Hot Stone Hover Effect
+   =========================== */
+
+   

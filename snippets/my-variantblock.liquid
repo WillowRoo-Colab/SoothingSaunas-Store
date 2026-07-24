@@ -1,0 +1,51 @@
+<!-- ========================================= -->
+<!--           SOOTHING SAUNAS – VARIANT BLOCK -->
+<!-- ========================================= -->
+
+{% assign product = product | default: form_product %}
+
+{% if product.variants.size > 1 %}
+
+  <div class="ss-variant-block">
+
+    <!-- ===== Variant Title ===== -->
+    <div class="ss-variant-title">
+      {{ section.settings.variant_title | default: "Choose Your Options" }}
+    </div>
+
+    <!-- ===== Variant Loop ===== -->
+    {% for option in product.options_with_values %}
+      <div class="ss-variant-option-group">
+
+        <!-- Option Name -->
+        <p class="ss-variant-option-label">{{ option.name }}</p>
+
+        <!-- Option Values -->
+        <div class="ss-variant-values">
+          {% for value in option.values %}
+            {% assign variant_available = false %}
+            {% for v in product.variants %}
+              {% if v.option1 == value or v.option2 == value or v.option3 == value %}
+                {% if v.available %}{% assign variant_available = true %}{% endif %}
+              {% endif %}
+            {% endfor %}
+
+            <label class="ss-variant-pill {% unless variant_available %}ss-disabled{% endunless %}">
+              <input 
+                type="radio" 
+                name="option{{ forloop.parentloop.index }}" 
+                value="{{ value }}" 
+                {% if option.selected_value == value %}checked{% endif %}
+                {% unless variant_available %}disabled{% endunless %}
+              >
+              <span>{{ value }}</span>
+            </label>
+          {% endfor %}
+        </div>
+
+      </div>
+    {% endfor %}
+
+  </div>
+
+{% endif %}

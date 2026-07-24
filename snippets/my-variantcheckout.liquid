@@ -1,0 +1,37 @@
+<!-- =========================================== -->
+<!--  SOOTHING SAUNAS – VARIANT ADD-ONS DROPDOWN -->
+<!--   CLEAN + FULLY FUNCTIONAL VERSION          -->
+<!-- =========================================== -->
+
+{% assign heater_variants = product.metafields.custom.eheater_options %}
+
+{% if heater_variants and heater_variants.size > 0 %}
+  <div class="ss-addon-container">
+    
+    <h3 class="ss-addon-header">Customize Your Sauna Experience</h3>
+
+    <label class="ss-addon-label" for="ss-addon-dropdown">
+      Select an upgrade option:
+    </label>
+
+    <select id="ss-addon-dropdown" class="ss-addon-select">
+      <option value="" data-price="0">No upgrade selected</option>
+
+      {% for variant in heater_variants %}
+        {% assign discounted = variant.price | times: 1.00 %}  <!-- change this amount to change discount price -->
+        <option 
+          value="{{ variant.id }}"
+          data-price="{{ discounted | divided_by: 100.0 }}"
+        >
+          {{ variant.title }} — <s>{{ variant.price | money }}</s> {{ discounted | money }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <!-- hidden field written to during JS price updates -->
+    <input type="hidden" 
+           id="ss-addon-hidden" 
+           name="properties[Selected Upgrade Variant]" 
+           value="">
+  </div>
+{% endif %}

@@ -1,0 +1,167 @@
+<button 
+  id="" 
+  class="ss-cta " 
+  type="submit">
+  <span class="ss-cta__label">Add to Order</span>
+  <span class="ss-cta__border"></span>
+</button>
+
+<style>
+/* ===============================
+   Custom Animated Gold Button
+   =============================== */
+.ss-cta {
+  position: relative;
+  display: inline-block;
+  padding: 0.75em 2.5em;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #C9A86A;
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: color 0.3s ease;
+  z-index: 1;
+}
+
+.ss-cta__border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #C9A86A;
+  border-radius: 20px;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.ss-cta__border::before {
+  content: "";
+  position: absolute;
+  width: 8%;
+  height: 500%;
+  background: #151515;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-60deg);
+  transition: all 0.3s ease;
+}
+
+.ss-cta:hover .ss-cta__border::before {
+  transform: translate(-50%, -50%) rotate(-90deg);
+  width: 120%;
+  background: #C9A86A;
+}
+
+.ss-cta:hover {
+  color: #151515;
+}
+
+.ss-cta:active .ss-cta__border::before {
+  background: #B38E56;
+}
+</style>
+<script>
+/* ===== Pop-up Zoom Modal ===== */
+  function enableZoomModal(imgEl) {
+    if (!imgEl) return;
+    imgEl.addEventListener('click', () => openZoomModal(imgEl.src));
+  }
+  enableZoomModal(mainImg);
+
+  function openZoomModal(src) {
+    const overlay = document.createElement('div');
+    overlay.className = 'ss-zoom-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'ss-zoom-modal';
+
+    const closeBtn = document.createElement('span');
+    closeBtn.className = 'ss-zoom-close';
+    closeBtn.innerHTML = '&times;';
+
+    const stage = document.createElement('div');
+    stage.className = 'ss-zoom-stage';
+
+    const big = document.createElement('img');
+    const base = src.split('?')[0];
+    big.src = `${base}?width=2400`;
+    big.className = 'ss-zoomed-image';
+    big.setAttribute('draggable', 'false');
+    big.style.userSelect = 'none';
+
+    stage.appendChild(big);
+    modal.appendChild(closeBtn);
+    modal.appendChild(stage);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+
+    /* === Zoom and Pan Behavior === */
+    let scale = 1;
+    let isDragging = false;
+    let startX = 0, startY = 0, translateX = 0, translateY = 0;
+
+    function applyTransform() {
+      stage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    // Click-to-zoom toggle
+    stage.addEventListener('click', (e) => {
+      if (e.target !== big) return;
+
+      if (scale === 1) {
+        scale = 2; // Zoom in
+        // Center zoom around click point
+        const rect = stage.getBoundingClientRect();
+        translateX = (rect.width / 2 - e.clientX + rect.left) / 2;
+        translateY = (rect.height / 2 - e.clientY + rect.top) / 2;
+        big.style.cursor = 'grab';
+      } else {
+        // Reset to normal
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        big.style.cursor = 'zoom-in';
+      }
+      applyTransform();
+    });
+
+    // Drag-to-pan while zoomed
+    stage.addEventListener('mousedown', (e) => {
+      if (scale <= 1) return;
+      isDragging = true;
+      startX = e.clientX - translateX;
+      startY = e.clientY - translateY;
+      big.style.cursor = 'grabbing';
+    });
+
+    stage.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      translateX = e.clientX - startX;
+      translateY = e.clientY - startY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      if (scale > 1) big.style.cursor = 'grab';
+    });
+
+    /* === Close modal === */
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    function closeModal() {
+      overlay.remove();
+      document.body.style.overflow = '';
+    }
+  }
+});
+</script>

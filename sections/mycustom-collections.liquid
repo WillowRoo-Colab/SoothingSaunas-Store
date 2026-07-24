@@ -1,0 +1,188 @@
+{% comment %}
+  Section: mycustom-collection-main
+  Purpose: Customizable collection layout with filters, grid settings, and product card styling
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "MyCustom Collection Main",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "label": "Products per row",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image corner radius (px)",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Padding between columns/rows (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "text",
+      "id": "collection_title",
+      "label": "Collection title override",
+    },
+    {
+      "type": "select",
+      "id": "title_font_family",
+      "label": "Title font family",
+      "options": [
+        { "value": "inherit", "label": "Inherit theme font" },
+        { "value": "Arial, sans-serif", "label": "Arial" },
+        { "value": "'Times New Roman', serif", "label": "Times New Roman" },
+        { "value": "'Courier New', monospace", "label": "Courier New" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title font size (px)",
+      "min": 14,
+      "max": 64,
+      "step": 1,
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title font weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "lighter", "label": "Lighter" },
+        { "value": "bolder", "label": "Bolder" }
+      ],
+      "default": "bold"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "range",
+          "id": "products_count",
+          "label": "Number of products",
+          "min": 1,
+          "max": 24,
+          "step": 1,
+          "default": 8
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link text",
+          "default": "Shop the Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "MyCustom Collections"
+    }
+  ]
+}
+{% endschema %}
+
+{% style %}
+  .mycustom-collection-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.products_per_row }}, 1fr);
+    gap: {{ section.settings.grid_gap }}px;
+  }
+
+  .mycustom-collection-image img {
+    border-radius: {{ section.settings.image_border_radius }}px;
+    width: 100%;
+    height: auto;
+  }
+
+  .mycustom-collection-title {
+    font-family: {{ section.settings.title_font_family }};
+    font-size: {{ section.settings.title_font_size }}px;
+    color: {{ section.settings.title_color }};
+    font-weight: {{ section.settings.title_font_weight }};
+    margin-bottom: 20px;
+  }
+{% endstyle %}
+
+<div class="mycustom-collection-wrapper">
+  <h1 class="mycustom-collection-title">
+    {{ section.settings.collection_title | default: collection.title }}
+  </h1>
+
+  {% if collection.filters.size > 0 %}
+    <form method="get">
+      {% for filter in collection.filters %}
+        <fieldset>
+          <legend>{{ filter.label }}</legend>
+          {% for value in filter.values %}
+            <label>
+              <input type="checkbox"
+                     name="{{ filter.param_name }}"
+                     value="{{ value.value }}"
+                     {% if value.active %}checked{% endif %} />
+              {{ value.label }}
+            </label>
+          {% endfor %}
+        </fieldset>
+      {% endfor %}
+      <button type="submit">Apply Filters</button>
+    </form>
+  {% endif %}
+
+  <div class="mycustom-collection-grid">
+    {% for product in collection.products %}
+      <div class="mycustom-collection-item">
+        <div class="mycustom-collection-image">
+          <a href="{{ product.url }}">
+            {{ product.featured_image | image_url: width: 600 | image_tag: alt: product.title }}
+          </a>
+        </div>
+        <div class="mycustom-product-title">{{ product.title }}</div>
+        <div class="mycustom-product-price">{{ product.price | money }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

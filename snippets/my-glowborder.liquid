@@ -1,0 +1,32 @@
+{%- comment -%}
+SOOTHING SAUNAS — MYGLOW BORDER
+Reusable luminous border/glow effect extracted from zoom modal overlay.
+
+TO USE WRAP CONTENTS TO GLOW IN : 
+  
+{% render 'my-glowborder',
+  color: '#C9A86A', blur1: '40px',
+  blur2: '80px', opacity1: 0.35, opacity2: 0.2, content_for_glow: '
+    <div class="your-target-section">
+       *** Insert contents to glow here. ***
+    </div>
+  '
+%}
+   
+{%- endcomment -%}
+
+<style>
+  .my-glowborder {
+    position: relative;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #111;
+    box-shadow:
+      0 0 {{ blur1 | default: '40px' }} {{ color | default: '#C9A86A' | color_modify: 'alpha', opacity1 | default: 0.35 }},
+      0 0 {{ blur2 | default: '80px' }} {{ color | default: '#C9A86A' | color_modify: 'alpha', opacity2 | default: 0.2 }};
+  }
+</style>
+
+<div class="my-glowborder">
+  {{ content_for_glow }}
+</div>

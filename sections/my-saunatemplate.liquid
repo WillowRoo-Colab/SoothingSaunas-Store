@@ -1,0 +1,169 @@
+{% comment %}
+  SECTION: my-saunatemplate
+  Used by: product.my-saunatemplate.json
+{% endcomment %}
+
+<style>
+  .mysoothing-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+    background-color: #151515;
+    color: #FAF3E0;
+    font-family: 'Lato', sans-serif;
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .my-gallery {
+    flex: 0 0 66%;
+    min-width: 400px;
+    padding: 12px;
+  }
+
+  .mysoothing-info {
+    flex: 0 0 30%;
+    min-width: 280px;
+    background: #1c1c1c;
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .gold-button-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .gold-button-loading::after {
+    content: 'Processing...';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(201,168,106,0.2),
+      rgba(201,168,106,0.4),
+      rgba(201,168,106,0.2)
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    color: #C9A86A;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  } 
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
+
+<div class="mysoothing-banner-mobile">
+  {% render 'my-scrollingbanner',
+    messages: product.metafields.custom.product_scrollingbanner.value,
+    scroll_speed: '30s',
+    fade_edges: true
+  %}
+</div>
+
+<div class="mysoothing-wrapper">
+  <div class="my-gallery">
+    {% render 'my-productgallery' %}
+    {% render 'my-zoommodal' %}
+  </div>  
+
+  <div class="mysoothing-info">
+    <div class="mysoothing-banner-desktop">
+      {% render 'my-scrollingbanner',
+        messages: product.metafields.custom.product_scrollingbanner.value,
+        scroll_speed: '20s',
+        fade_edges: true
+      %}
+    </div>
+
+    <h1 class="product-title">{{ product.title }}</h1>
+
+    {% if product.collections.first %}
+      <div class="collection-line">
+        from the {{ product.collections.first.title }}
+      </div>
+    {% endif %}
+
+    <div class="vendor-name">
+      <em>by&nbsp;</em>{{ product.vendor }}
+    </div>
+
+    {% render 'my-separatorline' %}
+
+    <div class="product-description">
+      {{ product.description }}
+    </div>
+
+    {% render 'my-separatorline' %}
+
+    <form method="post" action="/cart/add" id="AddToCartForm">
+      <input
+        type="hidden"
+        name="id"
+        value="{{ product.selected_or_first_available_variant.id }}"
+      >
+
+      {% render 'my-productaddons',
+        product: product,
+        addon_header: section.settings.addon_header
+      %}
+
+      <div class="price-button-row">
+        <div class="product-price" id="product-price" data-base-price="{{ product.price | times: 100 | round }}">
+          {{ product.price | money }}
+        </div>
+      <div>
+    
+        {% render 'my-goldbuybutton' %}
+        
+    </div>
+  
+        {% render 'my-goldbuttoncart' %}
+
+    </div>
+   </form>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "My Sauna Template",
+  "tag": "section",
+  "class": "section-my-saunatemplate",
+  "settings": [
+    {
+      "type": "text",
+      "id": "addon_header",
+      "label": "Add-ons Header",
+      "default": "Enhance Your Experience"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_gallery",
+      "name": "My Product Gallery",
+      "settings": []
+    }
+  ],
+  "presets": [
+    {
+      "name": "My Sauna Product Template",
+      "blocks": [
+        {
+          "type": "product_gallery"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

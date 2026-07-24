@@ -1,0 +1,140 @@
+{% comment %}
+  Snippet: mycustom-filter-overlay
+  Reusable drawer-style filter overlay for collection and search templates.
+  USE WITH: 
+    {% render 'mycustom-filter-overlay' %}
+{% endcomment %}
+
+<button id="openFilterDrawer" class="filter-toggle-button">Filter & Sort</button>
+
+<div id="filterDrawerOverlay" class="filter-overlay hidden"></div>
+<div id="filterDrawer" class="filter-drawer hidden">
+  <button id="closeFilterDrawer" class="close-button">×</button>
+
+  <form method="get" class="filter-form">
+    {% if collection.filters or search.filters %}
+      {% assign filters = collection.filters | default: search.filters %}
+
+      {% for filter in filters %}
+        <fieldset>
+          <legend>{{ filter.label }}</legend>
+          {% for value in filter.values %}
+            <label>
+              <input type="checkbox"
+                     name="{{ filter.param_name }}"
+                     value="{{ value.value }}"
+                     {% if value.active %}checked{% endif %}>
+              {{ value.label }}
+            </label>
+          {% endfor %}
+        </fieldset>
+      {% endfor %}
+    {% endif %}
+
+    {% if collection.sort_options or search.sort_options %}
+      {% assign sort_options = collection.sort_options | default: search.sort_options %}
+      <label for="SortBy">Sort by</label>
+      <select name="sort_by" id="SortBy">
+        {% for option in sort_options %}
+          <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected{% endif %}>
+            {{ option.name }}
+          </option>
+        {% endfor %}
+      </select>
+    {% endif %}
+
+    <button type="submit">Apply</button>
+  </form>
+</div>
+
+{% style %}
+  .filter-toggle-button {
+    padding: 10px 15px;
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+
+  .filter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+  }
+
+  .filter-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100vh;
+    background: #fff;
+    padding: 20px;
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    overflow-y: auto;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .close-button {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    float: right;
+    cursor: pointer;
+  }
+
+  .filter-form fieldset {
+    margin-bottom: 1rem;
+    border: none;
+  }
+
+  .filter-form legend {
+    font-weight: bold;
+  }
+
+  .filter-form label {
+    display: block;
+    margin: 5px 0;
+  }
+
+  .filter-form button[type="submit"] {
+    margin-top: 1rem;
+    background: #000;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+  }
+{% endstyle %}
+
+{% javascript %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const openBtn = document.getElementById('openFilterDrawer');
+    const closeBtn = document.getElementById('closeFilterDrawer');
+    const drawer = document.getElementById('filterDrawer');
+    const overlay = document.getElementById('filterDrawerOverlay');
+
+    openBtn.addEventListener('click', function () {
+      drawer.classList.remove('hidden');
+      overlay.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', function () {
+      drawer.classList.add('hidden');
+      overlay.classList.add('hidden');
+    });
+
+    overlay.addEventListener('click', function () {
+      drawer.classList.add('hidden');
+      overlay.classList.add('hidden');
+    });
+  });
+</script>
+{% endjavascript %}

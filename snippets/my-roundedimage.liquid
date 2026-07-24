@@ -1,0 +1,41 @@
+{% comment %}
+
+SOOTHING SAUNAS — UNIVERSAL ROUNDED IMAGE SNIPPET
+USE WITH:  {% render 'my-roundedimage', image: product.featured_image, alt: product.title %}
+    Optional parameters:  width, height, radius, shadow, background, hover_scale, fit
+
+{% endcomment %}
+
+{% assign img = image %}
+{% assign img_alt = alt | default: img.alt | default: '' %}
+{% assign img_width = width | default: 800 %}
+{% assign img_height = height | default: 'auto' %}
+{% assign img_radius = radius | default: '14px' %}
+{% assign img_shadow = shadow | default: '0 0 20px rgba(201,168,106,0.1)' %}
+{% assign img_bg = background | default: '#1a1a1a' %}
+{% assign img_hover = hover_scale | default: 1.15 %}
+{% assign img_fit = fit | default: 'cover' %}
+
+<div class="my-roundedimage-wrapper" style="
+  border-radius: {{ img_radius }};
+  overflow: hidden;
+  background: {{ img_bg }};
+  box-shadow: {{ img_shadow }};
+  display: block;
+  position: relative;
+">
+  {{ img | image_url: width: img_width | image_tag: alt: img_alt, loading: 'lazy', widths: '400,600,800,1000', class: 'my-roundedimage-img' }}
+</div>
+
+<style>
+.my-roundedimage-wrapper img.my-roundedimage-img {
+  width: 100%;
+  height: 100%;
+  object-fit: {{ img_fit }};
+  display: block;
+  transition: transform 0.35s ease;
+}
+.my-roundedimage-wrapper img.my-roundedimage-img:hover {
+  transform: scale({{ img_hover }});
+}
+</style>

@@ -1,0 +1,196 @@
+/* === Prestige Theme - Navigation Font Size Override === */
+.header__inline-menu .header__menu-item {
+  font-size: 24px !important;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.header__submenu .header__menu-item {
+  font-size: 16px !important;
+  font-weight: 400;
+}
+
+/* === PDF Product Measurements Popup Styling === */
+#measurements-modal {
+  display: none !important;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+}
+
+#measurements-modal.show {
+  display: block !important;
+}
+
+#measurements-modal .modal-content {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 0;
+  max-width: 900px;
+  width: 90%;
+  height: 80%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+#measurements-modal iframe {
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+/* === Dropdown Overflow Fix for Right-Edge Menus === */
+.header__submenu {
+  position: absolute;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+.header__menu-item:last-child .header__submenu {
+  left: auto;
+  right: 0;
+  transform: translateX(-10px);
+}
+
+@media (min-width: 769px) {
+  .header__submenu {
+    max-width: 300px;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+}
+
+/* === Custom Product Page Styling === */
+.product__info-container .h6 {
+  font-family: 'Playfair Display', serif !important;
+  font-size: 36px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  color: #C9A86A !important;
+}
+
+.product__info-container .product__vendor {
+  font-family: 'Playpen Sans', cursive !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: #C9A86A !important;
+  letter-spacing: 0.5px;
+}
+
+/* === Mobile Adjustments === */
+@media (max-width: 768px) {
+  .product__info-container .h6 {
+    font-size: 26px !important;
+    letter-spacing: 0.5px;
+  }
+
+  .product__info-container .product__vendor {
+    font-size: 16px !important;
+  }
+
+  .product-grid .card:hover,
+  .collection-list .card:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
+
+  .product-grid .card:hover img,
+  .collection-list .card:hover img {
+    transform: scale(1.02);
+  }
+}
+
+/* === Custom Social Icon Overrides === 
+/* === Override Branding Colors to #C9A86A for All Social Networks === */
+.social-media__item,
+.social-media__item a,
+.social-media__item a svg,
+.social-media__item svg {
+  color: #C9A86A !important;  /* This affects <path fill="currentColor"> */
+}
+.social-media__item:hover,
+.social-media__item:hover a,
+.social-media__item:hover svg {
+  color: #C9A86A !important;
+}
+/* =======================================
+   START — ROUNDED IMAGE SNIPPET STYLING
+   ======================================= 
+   Description:
+   - Creates reusable, luxury-style image frames with soft
+     corners and gold shimmer accents.
+   - Intended for product & collection imagery via the
+     'rounded-image.liquid' snippet.
+   - Add parameter shimmer:true in Liquid to activate glow.
+   =========================================================== */
+
+.ss-rounded-image-wrapper {
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 14px;
+  position: relative;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ss-rounded-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 14px;
+  transition: transform 0.3s ease;
+}
+
+/* ===========================================================
+   OPTIONAL VARIANT — DYNAMIC RADIUS (CUSTOM LIQUID VARIABLE)
+   -----------------------------------------------------------
+   Description:
+   - Allows individual images to specify their own corner
+     roundness via a Liquid variable (e.g., radius: 24).
+   - RENDER DYNAMIC RADIUS WITH:
+       {% render 'rounded-image', src: image.src, alt: image.alt, radius: 24 %}
+   =========================================================== */
+
+/* Uncomment below if you want to enable dynamic radius */
+  /* START
+    .ss-rounded-image-wrapper[data-radius] .ss-rounded-image,
+    .ss-rounded-image-wrapper[data-radius] {
+      border-radius: calc(var(--radius, 14px));
+    }
+
+    .ss-rounded-image-wrapper {
+      --radius: 14px;
+    }
+  END */
+
+/* Hover shimmer accent in gold tones */
+.ss-rounded-image-wrapper.shimmer:hover .ss-rounded-image {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(201, 168, 106, 0.35);
+}
+
+/* Optional subtle gold glow on hover */
+.ss-rounded-image-wrapper:hover {
+  box-shadow:
+    0 0 8px rgba(201,168,106,0.25),
+    0 0 24px rgba(201,168,106,0.15);
+  transform: translateY(-2px);
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .ss-rounded-image-wrapper {
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  .ss-rounded-image {
+    border-radius: 10px;
+  }
+} 
+/* =======================================
+   END — ROUNDED IMAGE SNIPPET STYLING
+   ======================================= */

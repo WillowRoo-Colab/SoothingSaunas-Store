@@ -1,0 +1,92 @@
+{% comment %}
+ GOLD BUY BUTTON LOGIC: 
+ - Pulls base price
+ - Updates page total as addons checked
+ - Creates form submission
+
+  TO USE: {% render 'my-goldbuttoncart' %}
+
+ {% endcomment %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("AddToCartForm");
+  const priceEl = document.querySelector(".product-price");
+  const buyButton = document.querySelector('[data-button-role="add-to-order"]');
+  const variantInput = document.getElementById("variant-id");
+
+  if (!form || !priceEl || !variantInput) return;
+
+  // ✅ Use raw base price from data attribute (in cents)
+  const basePrice = parseInt(priceEl.dataset.basePrice, 10);
+
+  function formatMoney(cents) {
+    return (cents / 100).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function updateDisplayedPrice() {
+    let total = basePrice;
+
+    document.querySelectorAll(".addon-checkbox:checked").forEach(cb => {
+      const addonPrice = parseInt(cb.dataset.addonPrice, 10);
+      if (!isNaN(addonPrice)) {
+        total += addonPrice;
+      }
+    });
+
+    // ✅ Update visible total
+    priceEl.textContent = `$${formatMoney(total)}`;
+  }
+
+  // Listen for changes on checkboxes
+  document.querySelectorAll(".addon-checkbox").forEach(cb =>
+    cb.addEventListener("change", updateDisplayedPrice)
+  );
+
+  // Initial price update on page load
+  updateDisplayedPrice();
+
+  // Form submission logic
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const baseVariantId = variantInput.value;
+    buyButton.classList.add("gold-button-loading");
+
+    fetch("/cart/add.js", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: baseVariantId, quantity: 1 })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Main product failed");
+      return res.json();
+    })
+    .then(() => {
+      const addons = document.querySelectorAll(".addon-checkbox:checked");
+      return Promise.all([...addons].map(cb =>
+        fetch("/cart/add.js", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: cb.dataset.productId,
+            quantity: 1
+          })
+        })
+      ));
+    })
+    .then(() => {
+      window.location.href = "/cart";
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error adding items to cart.");
+    })
+    .finally(() => {
+      buyButton.classList.remove("gold-button-loading");
+    });
+});
+</script>

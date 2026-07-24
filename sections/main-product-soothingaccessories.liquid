@@ -1,0 +1,572 @@
+{%- comment -%}
+SOOTHING SAUNAS – CUSTOM PRODUCT TEMPLATE (FULL UPDATE)
+- Adds separator lines above and below description
+- Adds centered price & button row with 48px gap and side padding
+- Reinstates high-res zoom modal (2x > 3x > reset, click-to-zoom, drag-to-pan)
+{%- endcomment -%}
+
+{%- comment -%}
+  SOOTHING SAUNAS – CUSTOM PRODUCT TEMPLATE (CLEAN DELUXE + PRICE ROW + ADVANCED ZOOM)
+  - High-res image swap (no blur)
+  - Click-to-zoom (1×→2×→3×→1×), drag-to-pan, pinch on mobile
+  - Natural cursor
+  - 65/35 layout
+  - Title (Cormorant Upright), Vendor (Lato), Description (Lato)
+  - Adjustable separator & price styling
+  - “Add to Order” shimmering gold button (snippet)
+{%- endcomment -%}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<section id="soothingsaunas-{{ section.id }}" class="soothing-product">
+  <div class="ss-container">
+    <div class="ss-product-grid">
+      
+<!-- === Left: Gallery === -->
+<div class="ss-gallery">
+  {% if product.media.size > 0 %}
+    <div class="ss-main-media">
+      {% assign featured = product.media.first %}
+      {% if featured %}
+        {% render 'my-roundedimage', image: featured, alt: product.title, width: 1600, radius: '14px', fit: 'contain' %}
+      {% endif %}
+    </div>
+
+    {% if product.media.size > 1 %}
+      <div class="ss-thumbs-wrapper">
+        <button class="ss-scroll-arrow left" aria-label="Scroll left">&#10094;</button>
+        <div class="ss-thumbs">
+          {% for media in product.media %}
+            <button type="button" class="ss-thumb" data-media-id="{{ media.id }}">
+              {% render 'my-roundedimage', image: media, alt: media.alt, width: 200, radius: '10px', fit: 'cover' %}
+            </button>
+          {% endfor %}
+        </div>
+        <button class="ss-scroll-arrow right" aria-label="Scroll right">&#10095;</button>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+
+<style>
+/* === Main Media === */
+#soothingsaunas-{{ section.id }} .ss-main-media {
+  position: relative;
+  width: 78%;
+  margin: 0 auto;
+  aspect-ratio: 4/3;
+  background-color: #151515;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-in;
+}
+#soothingsaunas-{{ section.id }} .ss-main-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+#soothingsaunas-{{ section.id }} .ss-main-image:hover {
+  transform: scale(1.015);
+}
+
+/* === Thumbnails === */
+#soothingsaunas-{{ section.id }} .ss-thumbs-wrapper {
+  position: relative;
+  width: 78%;
+  margin: 12px auto 0;
+}
+#soothingsaunas-{{ section.id }} .ss-thumbs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px;
+  scroll-snap-type: x mandatory;
+}
+#soothingsaunas-{{ section.id }} .ss-thumb {
+  flex: 0 0 calc(16.6% - 8px);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+#soothingsaunas-{{ section.id }} .ss-thumb-img {
+  width: 100%;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.25s ease, opacity 0.25s ease, box-shadow 0.25s ease;
+}
+#soothingsaunas-{{ section.id }} .ss-thumb-img:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+#soothingsaunas-{{ section.id }} .ss-thumb.active .ss-thumb-img {
+  box-shadow: 0 0 0 3px #C9A86A, 0 0 8px rgba(201,168,106,0.4);
+  transform: scale(1.05);
+}
+
+/* === Arrows === */
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(25,25,25,0.7);
+  border: none;
+  color: #c9a86a;
+  font-size: 24px;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow.left { left: -28px; }
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow.right { right: -28px; }
+
+{%-comment-%}
+/* === Zoom Overlay === 
+.ss-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeInZoom 0.3s ease;
+}
+.ss-zoom-modal {
+  position: relative;
+  width: 80vw;
+  height: 80vh;
+  background: #111;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 0 25px rgba(201,168,106,0.3),
+    0 0 60px rgba(201,168,106,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ss-zoom-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  will-change: transform;
+}
+.ss-zoomed-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  user-select: none;
+  pointer-events: none; /* stage handles input */
+  -webkit-user-drag: none;
+  transition: transform 0.15s ease-out;
+  transform-origin: 0 0; /* needed for precise click-zoom math */
+}
+.ss-zoom-close {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  font-size: 32px;
+  color: #C9A86A;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.3s ease;
+}  
+.ss-zoom-close:hover { color: #f0d48c; }. 
+{%-endcomment-%}
+@keyframes fadeInZoom {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 1000px) {
+  .ss-product-grid { grid-template-columns: 1fr; }
+  .ss-main-media, .ss-thumbs-wrapper { width: 100%; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const root = document.getElementById('soothingsaunas-{{ section.id }}');
+  if (!root) return;
+
+  const mainMedia = root.querySelector('.ss-main-media');
+  const mainImg = root.querySelector('.ss-main-image');
+  const thumbs = root.querySelectorAll('.ss-thumb');
+  const thumbsWrap = root.querySelector('.ss-thumbs');
+  const leftArrow = root.querySelector('.ss-scroll-arrow.left');
+  const rightArrow = root.querySelector('.ss-scroll-arrow.right');
+
+  /* Thumbnail click */
+  thumbs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const img = btn.querySelector('img');
+      if (!img || !mainMedia) return;
+      const base = img.src.split('?')[0];
+      const newSrc = `${base}?width=2000`;
+      mainMedia.innerHTML = `<img src="${newSrc}" class="ss-main-image" alt="{{ product.title | escape }}" style="cursor: zoom-in;">`;
+
+      setTimeout(() => {
+        const newMain = mainMedia.querySelector('.ss-main-image');
+        if (newMain) enableZoomModal(newMain);
+      }, 50);
+
+      thumbs.forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  /* Scroll arrows */ 
+  if (leftArrow && rightArrow && thumbsWrap) {
+    leftArrow.addEventListener('click', () => thumbsWrap.scrollBy({ left: -200, behavior: 'smooth' }));
+    rightArrow.addEventListener('click', () => thumbsWrap.scrollBy({ left: 200, behavior: 'smooth' }));
+  }
+
+  /* Wrap price + button row */
+  (function makePurchaseRow(){
+    const priceEl = root.querySelector('.ss-price');
+    const buyEl = root.querySelector('.ss-buy');
+    if (!priceEl || !buyEl) return;
+    if (buyEl.parentElement && buyEl.parentElement.classList.contains('ss-purchase-row')) return;
+    const row = document.createElement('div');
+    row.className = 'ss-purchase-row';
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.justifyContent = 'space-between';
+    row.style.gap = '0';
+    row.style.marginTop = '16px';
+    priceEl.parentElement.insertBefore(row, priceEl);
+    row.appendChild(priceEl);
+    row.appendChild(buyEl);
+  })();
+
+  /* Zoom modal binder */
+  function enableZoomModal(imgEl) {
+    if (!imgEl) return;
+    imgEl.onclick = () => openZoomModal(imgEl.src);
+  }
+
+  /* Initial binding */
+  setTimeout(() => {
+    if (mainImg) enableZoomModal(mainImg);
+  }, 50);
+});
+</script>
+
+{% render 'my-zoommodal' %}
+
+
+      <!-- === Info (Right Column) === -->
+      <div class="ss-info">
+        {% if section.blocks.size > 0 %}
+          {% for block in section.blocks %}
+            {% case block.type %}
+
+              {% when 'vendor' %}
+                <div class="ss-vendor" {{ block.shopify_attributes }}>
+                  <span class="vendor-prefix">by </span>
+                  <a href="{{ product.vendor | url_for_vendor }}" class="custom-sauna-vendor">{{ product.vendor }}</a>
+                </div>
+
+              {% when 'title' %}
+                {%- assign heading_tag = block.settings.heading_tag | default: 'h1' -%}
+                <{{ heading_tag }} class="product-title custom-sauna-title" {{ block.shopify_attributes }}>
+                  {{ product.title }}
+                </{{ heading_tag }}>
+                {% if section.settings.show_collection_badge and product.collections.size > 0 %}
+                  <p class="ss-collection-line"><em>{{ section.settings.collection_line_prefix | default: 'from our collection' }}</em></p>
+                {% endif %}
+
+              {% when 'price' %}
+                <div class="ss-price" {{ block.shopify_attributes }}>
+                  <span class="ss-price-current" style="
+                    font-size: {{ section.settings.price_font_size }};
+                    color: {{ section.settings.price_color }};
+                    margin-left: {{ section.settings.price_indent }}px;">
+                    {{ current_variant.price | money }}
+                  </span>
+                  {% if current_variant.compare_at_price > current_variant.price %}
+                    <span class="ss-price-compare">{{ current_variant.compare_at_price | money }}</span>
+                  {% endif %}
+                </div>
+
+              {% when 'description' %}
+                {% if product.description != blank %}
+                  <div class="ss-description" {{ block.shopify_attributes }}>
+                    {{ product.description }}
+                  </div>
+                {% endif %}
+
+                {% if section.settings.second_description_line != blank %}
+                <p class="ss-description-sub">{{ section.settings.second_description_line }}</p>
+                {% endif %} 
+
+              {% when 'separator' %}
+                {% render 'my-separatorline' %}
+
+              {% when 'buy_buttons' %}
+                <div class="ss-buy" {{ block.shopify_attributes }}>
+                  {%- assign form_id = 'ss-form-' | append: section.id -%}
+                  {%- form 'product', product, id: form_id, class: 'ss-product-form', novalidate: 'novalidate' -%}
+                    <input type="hidden" name="id" value="{{ current_variant.id }}">
+                    {% render 'my-productaddons' %} <!-- Add-On Checkboxes -->
+                    {% render 'my-goldbuybutton', button_label: 'Add to Order' %}
+                  {%- endform -%}
+                </div>
+
+            {% endcase %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <style>
+/* ===== Layout ===== */
+#soothingsaunas-{{ section.id }} .ss-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: clamp(60px, 8vw, 120px) clamp(24px, 5vw, 80px);
+  box-sizing: border-box;
+}
+#soothingsaunas-{{ section.id }} .ss-product-grid {
+  display: grid;
+  grid-template-columns: 65% 35%;
+  column-gap: clamp(12px, 1.25vw, 24px);
+  align-items: start;
+}
+
+/* ===== Main Media ===== */
+#soothingsaunas-{{ section.id }} .ss-main-media {
+  position: relative;
+  width: 78%;
+  margin: 0 auto;
+  aspect-ratio: 4/3;
+  background-color: #151515;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex; justify-content: center; align-items: center;
+  cursor: zoom-in;
+}
+#soothingsaunas-{{ section.id }} .ss-main-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: opacity 0.3s ease, transform 0.25s ease;
+}
+#soothingsaunas-{{ section.id }} .ss-main-image:hover { transform: scale(1.015); }
+
+/* ===== Thumbnails ===== */
+#soothingsaunas-{{ section.id }} .ss-thumbs-wrapper {
+  position: relative;
+  width: 78%;
+  margin: 12px auto 0;
+}
+#soothingsaunas-{{ section.id }} .ss-thumbs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px;
+  scroll-snap-type: x mandatory;
+}
+#soothingsaunas-{{ section.id }} .ss-thumb { flex: 0 0 calc(16.6% - 8px); border: none; background: none; cursor: pointer; }
+#soothingsaunas-{{ section.id }} .ss-thumb-img {
+  width: 100%; height: 70px; object-fit: cover; border-radius: 10px;
+  transition: transform 0.25s ease, opacity 0.25s ease, box-shadow 0.25s ease;
+}
+#soothingsaunas-{{ section.id }} .ss-thumb-img:hover { transform: scale(1.05); opacity: 0.9; }
+#soothingsaunas-{{ section.id }} .ss-thumb.active .ss-thumb-img {
+  box-shadow: 0 0 0 3px #C9A86A, 0 0 8px rgba(201,168,106,0.4);
+  transform: scale(1.05);
+}
+
+/* ===== Arrows ===== */
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(25,25,25,0.7); border: none; color: #c9a86a;
+  font-size: 24px; padding: 8px; border-radius: 50%; cursor: pointer;
+  transition: all 0.3s ease;
+}
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow.left { left: -28px; }
+#soothingsaunas-{{ section.id }} .ss-scroll-arrow.right { right: -28px; }
+
+/* ===== Typography ===== */
+.custom-sauna-title {
+  font-family: 'Cormorant Upright', serif; color: #ece3cb; font-weight: 600;
+  font-size: clamp(24px, 4vw + 1rem, 30px); margin-top: 8px; letter-spacing: 0.3px;
+}
+/* .vendor-prefix { font-family: 'Lato', sans-serif; color: #e8e1c4; opacity: .85; font-size: 14px; margin-left: 64px; } */
+.custom-sauna-vendor { font-family: 'Lato', sans-serif; color: #ece3cb; font-size: 16px; font-weight: 500; }
+.ss-collection-line { font-family: 'Cormorant Upright', serif; font-size: 22px; color: #c9a86a; font-style: italic; margin-left: 24px; }
+.ss-description { font-family: 'Lato', sans-serif; color: #e8e1c4; font-size: 16px; line-height: 1.55; margin: 20px 0 36px; }
+.ss-description-sub { font-family: 'Lato', sans-serif; color: #e0dbc5; font-size: 14px; /* slightly smaller than main */ line-height: 1.45; margin-top: -8px; margin-bottom: 32px; opacity: 0.85;
+}
+/* ===== MOBILE Responsive Indentation Logic ===== */
+
+/* ===== Desktop Vendor Alignment ===== */
+@media (min-width: 769px) {
+  #soothingsaunas-{{ section.id }} .ss-vendor {
+    margin-left: 64px;           /* keep your elegant tiered indent */
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  #soothingsaunas-{{ section.id }} .vendor-prefix {
+    margin: 0;                   /* no extra spacing inside */
+  }
+}
+
+/* ===== Mobile Vendor Centering ===== */
+@media (max-width: 768px) {
+  #soothingsaunas-{{ section.id }} .ss-vendor {
+    margin-left: 0;              /* remove indent */
+    justify-content: center;     /* fully centered */
+    text-align: center;
+  }
+}
+  #soothingsaunas-{{ section.id }} .ss-vendor {
+    display: inline-flex;
+    align-items: baseline;  /* aligns text bottoms properly */
+    justify-content: center;
+    gap: 4px;
+}
+}
+/* ===== END Responsive Indentation Logic ===== */
+
+/* ===== Separator ===== */
+.ss-separator-block {
+  border-bottom: solid {{ section.settings.separator_thickness | default: 1 }}px {{ section.settings.separator_color | default: '#a08119' }};
+  margin: 20px 0; opacity: 0.3;
+}
+
+/* ===== Modal (legacy selectors retained for your theme) ===== */
+#soothingsaunas-{{ section.id }} .ss-image-modal {
+  display: none; position: fixed; z-index: 9999; inset: 0;
+  background: rgba(27, 21, 15, 0.95);
+}
+#soothingsaunas-{{ section.id }} .ss-modal-content {
+  display: block; margin: 60px auto; max-width: 90%; max-height: 85vh;
+  border-radius: 10px; transition: transform 0.3s ease;
+  cursor: grab;
+}
+#soothingsaunas-{{ section.id }} .ss-modal-close {
+  position: absolute; top: 20px; right: 35px; color: #c9a86a;
+  font-size: 36px; cursor: pointer; z-index: 10001;
+}
+@keyframes zoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@media (max-width: 1000px) {
+  .ss-product-grid { grid-template-columns: 1fr; }
+  .ss-main-media, .ss-thumbs-wrapper { width: 100%; }
+}
+/* === START of MOBILE 1-COLUMN REORDER === */
+@media (max-width: 768px) {
+  #soothingsaunas-{{ section.id }} .ss-product-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Stack main image + thumbs full width */
+  #soothingsaunas-{{ section.id }} .ss-main-media,
+  #soothingsaunas-{{ section.id }} .ss-thumbs-wrapper {
+    width: 100%;
+    margin: 12px 0;
+  }
+
+  /* Reduce side padding for better fit */
+  #soothingsaunas-{{ section.id }} .ss-container {
+    padding: 24px 16px;
+  }
+
+  /* Adjust title + text sizes for mobile readability */
+  #soothingsaunas-{{ section.id }} .custom-sauna-title {
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+  #soothingsaunas-{{ section.id }} .ss-collection-line {
+    font-size: 18px;
+    margin: 0 auto 8px;
+  }
+  #soothingsaunas-{{ section.id }} .custom-sauna-vendor {
+    display: block;
+    margin: 0 auto 16px;
+  }
+
+  /* Description spacing */
+  #soothingsaunas-{{ section.id }} .ss-description {
+    margin: 16px 0;
+  }
+
+  /* Separator line adjustment */
+  #soothingsaunas-{{ section.id }} .ss-separator-block {
+    width: 60%;
+    margin: 18px auto;
+  }
+
+  /* Ensure add-on checkboxes + price + button flow naturally */
+  #soothingsaunas-{{ section.id }} .ss-buy,
+  #soothingsaunas-{{ section.id }} .ss-price {
+    width: 100%;
+    margin-top: 16px;
+  }
+  #soothingsaunas-{{ section.id }} .ss-buy button {
+    width: 100%;
+    margin-top: 12px;
+  }
+}
+/* === END of MOBILE 1-COLUMN REORDER === */
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Product(Soothing Accs)",
+  "settings": [
+    { "type": "checkbox", "id": "show_collection_badge", "label": "Show collection line", "default": true },
+    { "type": "text", "id": "collection_line_prefix", "label": "Collection line prefix", "default": "from the" },
+    { "type": "color", "id": "separator_color", "label": "Separator color", "default": "#a08119" },
+    { "type": "range", "id": "separator_thickness", "label": "Separator thickness", "min": 1, "max": 8, "step": 1, "default": 2 },
+    { "type": "text", "id": "price_font_size", "label": "Price font size", "default": "22px" },
+    { "type": "color", "id": "price_color", "label": "Price color", "default": "#ece3cb" },
+    { "type": "range", "id": "price_indent", "label": "Price indent (px)", "min": 0, "max": 50, "step": 2, "default": 0 },
+    { "type": "text", "id": "second_description_line", "label": "Optional second description line" }
+  ],
+  "blocks": [
+    { "type": "vendor", "name": "Vendor" },
+    { "type": "title", "name": "Title" },
+    { "type": "price", "name": "Price" },
+    { "type": "description", "name": "Description" },
+    { "type": "separator", "name": "Separator Line" },
+    { "type": "buy_buttons", "name": "Buy Buttons" },
+    { "type": "variant_picker", "name": "Variant Picker" }
+  ],
+  "presets": [
+    {
+      "name": "Product Soothing Accessories",
+      "blocks": [
+        { "type": "title" },
+        { "type": "vendor" },
+        { "type": "separator" },
+        { "type": "description" },
+        { "type": "price" },
+        { "type": "variant_picker" },
+        { "type": "buy_buttons" }
+      ]
+    }
+  ]
+}
+{% endschema %}

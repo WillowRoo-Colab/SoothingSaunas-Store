@@ -1,0 +1,1295 @@
+{%- comment -%}
+SOOTHING SAUNAS — FINAL PRODUCT TEMPLATE (2025 MASTER BUILD)
+Section includes:
+• Fully upgraded gallery (radius, thumb count, spacing)
+• Embedded Zoom Modal render (unchanged)
+• All blocks in your locked order
+• Clean and non-duplicated Liquid logic
+{%- endcomment -%}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<section id="soothingsaunas-{{ section.id }}"
+         class="soothing-layout"
+         style="
+           --layout-mode: {{ section.settings.layout_mode }};
+           --left-column: {{ section.settings.left_col_width | default: '65%' }}%;
+           --max-width: {{ section.settings.max_page_width }};
+         ">
+
+  <!-- ================================================= -->
+  <!--                    OUTER CONTAINER                -->
+  <!-- ================================================= -->
+  <div class="soothing-container">
+
+    <!-- =============================================== -->
+    <!--                  GRID WRAPPER                   -->
+    <!-- =============================================== -->
+    <div class="soothing-grid
+      {% if section.settings.layout_mode == 'one_column' %} one-col
+      {% elsif section.settings.layout_mode == 'two_column' %} two-col
+     {%- comment -%} {% elsif section.settings.layout_mode == 'two_plus_bottom' %} two-plus {%-  endcomment -%}
+      {% endif %}">
+
+      <!-- ============================================== -->
+      <!--             LEFT COLUMN — GALLERY              -->
+      <!-- ============================================== -->
+      <div class="ss-gallery"
+           style="
+             --gallery-radius: {{ section.settings.gallery_radius | default: 0 }}px;
+             --thumb-size: {{ section.settings.thumb_size | default: 80 }}px;
+             --thumb-gap: {{ section.settings.thumb_gap | default: 8 }}px;
+             --thumbs-per-row: {{ section.settings.thumb_count | default: 5 }};
+             --gallery-margin-bottom: {{ section.settings.gallery_margin_bottom | default: 24 }}px;
+           ">
+
+        {% if product.media.size > 0 %}
+          <!-- Main Featured Image -->
+          <div class="ss-main-media">
+            {% assign featured = product.media.first %}
+            {% if featured %}
+              {{ featured | image_url: width: 2000 | image_tag: class: 'ss-main-image', loading: 'eager', widths: '600,1000,1400,1600,2000' }}
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if product.media.size > 1 %}
+          <div class="ss-thumbs-wrapper">
+            <button class="ss-scroll-arrow left" aria-label="Scroll Left">&#10094;</button>
+            <div class="ss-thumbs">
+              {% for media in product.media %}
+                <button class="ss-thumb" data-media-id="{{ media.id }}">
+                  {{ media | image_url: width: 200 | image_tag: class: 'ss-thumb-img', loading: 'lazy', widths: '100,150,200' }}
+                </button>
+              {% endfor %}
+            </div>
+            <button class="ss-scroll-arrow right" aria-label="Scroll Right">&#10095;</button>
+          </div>
+        {% endif %}
+      </div>
+      {% render 'my-zoommodal' %}
+
+      <!-- ================================================== -->
+      <!--              RIGHT COLUMN — INFO BLOCKS            -->
+      <!-- ================================================== -->
+      <div class="ss-info">
+
+        {% for block in section.blocks %}
+          {% case block.type %}
+
+          <!-- =========================================== -->
+          <!-- 1. SCROLLING BANNER BLOCK                   -->
+          <!-- =========================================== -->
+          {% when 'scrolling_banner' %}
+            <div class="ss-banner"
+                 style="
+                   --banner-font-family: {{ block.settings.font_family.family }};
+                   --banner-font-size: {{ block.settings.font_size }};
+                   --banner-text-color: {{ block.settings.text_color }};
+                   --banner-bg: {{ block.settings.bg_color }};
+                   --banner-speed: {{ block.settings.scroll_speed }}s;
+                 "
+                 {{ block.shopify_attributes }}>
+              <div class="ss-banner-track">
+                {% assign messages = block.settings.messages | split: '\n' %}
+                {% for msg in messages %}
+                  <span class="ss-banner-item">{{ msg }}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+          <!-- =========================================== -->
+          <!-- 2. TITLE BLOCK                              -->
+          <!-- =========================================== -->
+          {% when 'title' %}
+            <div class="ss-typography"
+                 style="
+                   --typo-font-family: {{ block.settings.font_family.family }};
+                   --typo-font-size: {{ block.settings.font_size }};
+                   --typo-font-weight: {{ block.settings.font_weight }};
+                   --typo-color: {{ block.settings.font_color }};
+                   --typo-line-height: {{ block.settings.line_height }};
+                   --typo-letter-spacing: {{ block.settings.letter_spacing }};
+                   --typo-indent: {{ block.settings.indent }};
+                   --typo-margin-bottom: {{ block.settings.margin_bottom }};
+                 "
+                 {{ block.shopify_attributes }}>
+              <{{ block.settings.heading_tag }}>
+                {{ product.title }}
+              </{{ block.settings.heading_tag }}>
+            </div>
+
+          <!-- ============================================ -->
+          <!-- 3. COLLECTION LINE BLOCK                     -->
+          <!-- ============================================ -->
+          {% when 'collection_line' %}
+            {% if product.collections.size > 0 %}
+              <div class="ss-typography"
+                   style="
+                     --typo-font-family: {{ block.settings.font_family.family }};
+                     --typo-font-size: {{ block.settings.font_size }};
+                     --typo-font-weight: {{ block.settings.font_weight }};
+                     --typo-color: {{ block.settings.font_color }};
+                     --typo-line-height: {{ block.settings.line_height }};
+                     --typo-letter-spacing: {{ block.settings.letter_spacing }};
+                     --typo-indent: {{ block.settings.indent }};
+                     --typo-margin-bottom: {{ block.settings.margin_bottom }};
+                   "
+                   {{ block.shopify_attributes }}>
+                <em>{{ block.settings.collection_text }}</em>
+              </div>
+            {% endif %}
+
+          <!-- ============================================ -->
+          <!-- 4. VENDOR BLOCK                              -->
+          <!-- ============================================ -->
+          {% when 'vendor' %}
+            <div class="ss-typography"
+                 style="
+                   --typo-font-family: {{ block.settings.font_family.family }};
+                   --typo-font-size: {{ block.settings.font_size }};
+                   --typo-font-weight: {{ block.settings.font_weight }};
+                   --typo-color: {{ block.settings.font_color }};
+                   --typo-line-height: {{ block.settings.line_height }};
+                   --typo-letter-spacing: {{ block.settings.letter_spacing }};
+                   --typo-indent: {{ block.settings.indent }};
+                   --typo-margin-bottom: {{ block.settings.margin_bottom }};
+                 "
+                 {{ block.shopify_attributes }}>
+              <span class="vendor-prefix">{{ block.settings.vendor_prefix }}</span>{{ product.vendor }}
+            </div>
+
+          <!-- ============================================ -->
+          <!-- 5 & 7. SEPARATOR BLOCKS (You have two)       -->
+          <!-- ============================================ -->
+          {% when 'separator' %}
+            <div class="ss-separator-block"
+                 style="
+                   margin-top: {{ block.settings.sep_margin }}px;
+                   margin-bottom: {{ block.settings.sep_margin }}px;
+                 "
+                 {{ block.shopify_attributes }}>
+              <div class="ss-separator-line"
+                   style="
+                     width: {{ block.settings.sep_width }}%;
+                     height: {{ block.settings.sep_thickness }}px;
+                     background-color: {{ block.settings.sep_color }};
+                     opacity: {{ block.settings.sep_opacity }};
+                   ">
+              </div>
+            </div>
+
+          <!-- ============================================ -->
+          <!-- 6. DESCRIPTION BLOCK                         -->
+          <!-- ============================================ -->
+          {% when 'description' %}
+            <div class="ss-typography"
+                 style="
+                   --typo-font-family: {{ block.settings.font_family.family }};
+                   --typo-font-size: {{ block.settings.font_size }};
+                   --typo-font-weight: {{ block.settings.font_weight }};
+                   --typo-color: {{ block.settings.font_color }};
+                   --typo-line-height: {{ block.settings.line_height }};
+                   --typo-letter-spacing: {{ block.settings.letter_spacing }};
+                   --typo-indent: {{ block.settings.indent }};
+                   --typo-margin-bottom: {{ block.settings.margin_bottom }};
+                 "
+                 {{ block.shopify_attributes }}>
+              {{ product.description }}
+            </div>
+
+          <!-- ============================================= -->
+          <!-- 8. VARIANT OPTIONS BLOCK                      -->
+          <!-- ============================================= -->
+          {% when 'variant_display' %}
+            <div class="ss-variant-block" {{ block.shopify_attributes }}>
+              {% render 'my-variantcheckout', block: block, product: product %}
+            </div>
+
+          <!-- ============================================= -->
+          <!-- 9. ADD-ONS BLOCK                              -->
+          <!-- ============================================= -->
+          {% when 'addons_block' %}
+          {% if product.metafields.custom.addon_items and product.metafields.custom.addon_items.value.size > 0 %}
+            {% assign addons = product.metafields.custom.addon_items.value %}
+
+           <div class="ss-addons-block" {{ block.shopify_attributes }}>
+              <h3 class="ss-addon-title">
+                {{ block.settings.addon_title | default: "Enhance Your Sauna" }}
+              </h3>
+
+            <div class="ss-addons-list">
+              {% for addon in addons %}
+                {%- assign addon_product = addon.product.value -%}
+                {%- assign addon_variant = addon.variant_id.value | default: addon_product.selected_or_first_available_variant -%}
+                {%- assign base_price = addon.price.value | default: addon_variant.price -%}
+                {%- assign discount = addon.discount.value | default: 0 -%}
+                {%- assign final_price = base_price | minus: base_price | times: discount | divided_by: 100 | times: -1 -%}
+
+                <label class="ss-addon-item">
+                <input
+                  type="checkbox"
+                  class="ss-addon-checkbox"
+                  data-variant-id="{{ addon_variant.id }}"
+                  data-price="{{ final_price }}"
+                  data-base-price="{{ base_price }}"
+                > 
+
+                <span class="ss-addon-label">
+                  {{ addon.label.value | default: addon_product.title }}
+                </span>
+
+                <span class="ss-addon-price">
+                  {% if discount > 0 %}
+                    <span class="ss-addon-original">{{ base_price | money }}</span>
+                    <span class="ss-addon-discounted">{{ final_price | money }}</span>
+                  {% else %}
+                    <span class="ss-addon-normal">{{ base_price | money }}</span>
+                  {% endif %}
+                </span>
+                </label>
+              {% endfor %}
+            </div>
+           </div>
+          {% endif %}
+
+          <!-- ============================================= -->
+          <!-- 10. SPECS LINK BLOCK                          -->
+          <!-- ============================================= -->
+          {% when 'specs_link' %}
+            <div class="ss-specs-link" {{ block.shopify_attributes }}>
+              <a href="{{ block.settings.specs_url }}" target="_blank">
+                {{ block.settings.specs_label }}
+              </a>
+            </div>
+
+        <!-- ========================================= -->
+        <!--                 PRICE BLOCK               -->
+        <!-- ========================================= -->
+          {% when 'price_block' %}
+            <div class="ss-price-block" {{ block.shopify_attributes }}>
+
+            <div class="ss-price-amount"
+              data-product-price="{{ current_variant.price | divided_by: 100 }}">
+              {{ current_variant.price | money }}
+          </div>
+
+          {% render 'my-goldbuybutton', button_label: 'Add to Order' %}
+
+  </div>
+
+          {% endcase %}
+        {% endfor %}
+      
+      </div> <!-- END RIGHT COLUMN -->
+
+    </div> <!-- END GRID -->
+
+  </div> <!-- END CONTAINER -->
+
+</section>
+<style>
+
+/* ===================================================== */
+/*                 CORE LAYOUT ENGINE                    */
+/* ===================================================== */
+.soothing-layout { width: 100%; background: #151515; display: block; }
+.soothing-container { max-width: var(--max-width); margin: 0 auto; padding: clamp(40px, 6vw, 80px) clamp(16px, 4vw, 64px); }
+.soothing-grid { display: grid; gap: 40px; }
+
+/* === GRID MODES === */
+.soothing-grid.one-col { grid-template-columns: 1fr !important; }
+.soothing-grid.two-col { grid-template-columns: var(--left-column) calc(100% - var(--left-column)); }
+.soothing-grid.two-plus { grid-template-columns: var(--left-column) calc(100% - var(--left-column)); }
+.soothing-grid.two-plus::after { content: ""; grid-column: 1 / -1; height: 1px; }
+
+/* MOBILE OVERRIDE */
+@media (max-width: 768px) {
+  .soothing-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ===================================================== */
+/*                    TYPOGRAPHY ENGINE                  */
+/* ===================================================== */
+.ss-typography {
+  font-family: var(--typo-font-family);
+  font-size: var(--typo-font-size);
+  font-weight: var(--typo-font-weight);
+  color: var(--typo-color);
+  line-height: var(--typo-line-height);
+  letter-spacing: var(--typo-letter-spacing);
+  text-indent: var(--typo-indent);
+  margin-bottom: var(--typo-margin-bottom);
+}
+
+/* ======================================================= */
+/*                 GALLERY (UPGRADED ENGINE)               */
+/* ======================================================= */
+.ss-gallery { margin-bottom: var(--gallery-margin-bottom); }
+.ss-main-media img.ss-main-image { width: 100%; height: auto; border-radius: var(--gallery-radius); cursor: zoom-in; /* keeps natural zoom cue */ }
+    /* Thumbnails container */
+.ss-thumbs-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.ss-thumbs { display: grid; grid-template-columns: repeat(var(--thumbs-per-row), var(--thumb-size)); gap: var(--thumb-gap); }
+.ss-thumb-img { width: var(--thumb-size); height: var(--thumb-size); object-fit: cover; border-radius: var(--gallery-radius); cursor: pointer; transition: transform .15s ease, opacity .15s ease; }
+.ss-thumb-img:hover { transform: scale(1.05); opacity: 0.85; }
+.ss-scroll-arrow { background: none; border: none; color: #ECE3CB; font-size: 20px; cursor: pointer; transition: opacity .15s ease; }
+.ss-scroll-arrow:hover { opacity: .6; }
+
+/* ===================================================== */
+/*                    SEPARATOR BLOCKS                   */
+/* ===================================================== */
+.ss-separator-block { width: 100%; text-align: center; }
+.ss-separator-line { margin-left: auto; margin-right: auto; border-radius: 4px; } 
+
+/* ===================================================== */
+/*                    PRICE BLOCK                        */
+/* ===================================================== */
+.ss-price-block { margin-top: 24px; font-family: var(--price-font-family); font-size: var(--price-font-size); font-weight: var(--price-weight); color: var(--price-color); }
+
+/* ======================================================= */
+/*                 VARIANT DISPLAY BLOCK                   */
+/* ======================================================= */
+.ss-variant-block label { display: block; margin-bottom: 6px; font-size: 15px; color: #ECE3CB; }
+.ss-variant-dropdown { background: #222; color: #ECE3CB; border: 1px solid #444; padding: 10px 14px; border-radius: 8px; width: 100%; }
+.ss-variant-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.ss-variant-button { background: #222; color: #ECE3CB; border: 1px solid #444; padding: 10px 16px; border-radius: 10px; cursor: pointer; transition: all .15s ease; }
+.ss-variant-button:hover { border-color: #C9A86A; color: #C9A86A; }
+.ss-variant-button.active { background: #C9A86A; color: #151515; border-color: #C9A86A; }
+
+/* ===================================================== */
+/*                ADD-ON BLOCK STYLE                     */
+/* ===================================================== */
+.ss-addons { display: flex; flex-direction: column; gap: 12px; margin-top: 20px;}
+.ss-addon-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 10px; background: #1b1b1b; border: 1px solid #333; }
+.ss-addon-row label { color: #ECE3CB; font-size: 15px; }
+.ss-addon-price { color: #C9A86A; font-weight: 600; } 
+.ss-addon-discounted { color: #E0E0E0; text-decoration: line-through; opacity: .6; }
+.ss-addons-wrapper { margin: 24px 0 40px 0; padding: 24px; border: 1px solid rgba(236, 227, 203, 0.12); border-radius: 12px; background: rgba(21, 21, 21, 0.55); backdrop-filter: blur(4px); }
+.ss-addons-title { font-family: var(--typo-font-family, 'Lato'); font-size: 20px; font-weight: 600; color: #ECE3CB; margin-bottom: 18px; letter-spacing: 0.4px; }
+.ss-addon-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 12px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); transition: background 0.25s ease, transform 0.2s ease; }
+.ss-addon-item:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+.ss-addon-left { display: flex; flex-direction: column; }
+.ss-addon-label { font-family: 'Lato'; font-size: 16px; font-weight: 500; color: #ECE3CB; margin-bottom: 4px; }
+.ss-addon-price-normal { font-size: 15px; color: rgba(236, 227, 203, 0.55); text-decoration: line-through; margin-right: 6px; }
+.ss-addon-price-final { font-size: 17px; color: #C9A86A; font-weight: 600; }
+.ss-addon-discount-tag { background: rgba(201, 168, 106, 0.15); padding: 3px 8px; border-radius: 6px; font-size: 13px; color: #C9A86A; margin-left: 8px; }
+.ss-addon-checkbox { width: 20px; height: 20px; accent-color: #C9A86A; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .ss-addon-item { flex-direction: column; text-align: center; gap: 8px; }
+  .ss-addon-left { align-items: center; }
+}
+
+/* ===================================================== */
+/*                   SCROLLING BANNER                    */
+/* ===================================================== */
+.ss-banner { width: 100%; overflow: hidden; background: var(--banner-bg); color: var(--banner-text-color); font-family: var(--banner-font-family); font-size: var(--banner-font-size); margin-bottom: 24px; padding: 10px 0; position: relative; }
+.ss-banner-track { white-space: nowrap; display: inline-block; animation: ss-banner-scroll var(--banner-speed) linear infinite; }
+.ss-banner-item { margin-right: 80px; }
+
+/* Soft fade edges */
+.ss-banner::before, .ss-banner::after { content: ""; position: absolute; top: 0; width: 40px; height: 100%; pointer-events: none; }
+
+.ss-banner::before { left: 0; background: linear-gradient(to left, transparent, var(--banner-bg)); }
+.ss-banner::after { right: 0; background: linear-gradient(to right, transparent, var(--banner-bg)); }
+
+@keyframes ss-banner-scroll {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(-100%); }
+}
+
+/* =========================================================== */
+/*                           SPECS LINK                        */
+/* =========================================================== */
+.ss-specs-link { margin-top: 20px; margin-bottom: 20px; }
+.ss-specs-link a { color: #C9A86A; text-decoration: underline; font-size: 15px; transition: opacity .15s ease; }
+.ss-specs-link a:hover { opacity: .6; }
+
+/* =========================================================== */
+/*                           MOBILE TUNING                     */
+/* =========================================================== */
+@media (max-width: 768px) {
+  .ss-addons { width: 100%; align-items: center; }
+  .ss-price-block { text-align: center; }
+}
+
+</style>
+<script>
+/* =========================================================== */
+/*                  GALLERY ENGINE — OPTION B                  */
+/*   Stable image swap + scroll arrows + zoommodal support     */
+/* =========================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ---- Element Handles ---- */
+  const thumbsWrapper = document.querySelector(".ss-thumbs");
+  const thumbButtons  = document.querySelectorAll(".ss-thumb");
+  const mainImg       = document.querySelector(".ss-main-image");
+
+  /* Exit early if gallery missing */
+  if (!thumbsWrapper || !thumbButtons.length || !mainImg) return;
+
+  /* ---- Thumbnail Click → Swap Featured Image ---- */
+    thumbButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+      const imgTag = btn.querySelector("img");
+      const mainMedia = document.querySelector(".ss-main-media");
+      if (!imgTag || !mainMedia) return;
+
+      const baseSrc = imgTag.src.split("?")[0];
+      const newSrc = `${baseSrc}?width=2000`;
+
+      mainMedia.innerHTML = `
+      <img
+        src="${newSrc}"
+        class="ss-main-image"
+        style="cursor: zoom-in;"
+      >
+      `;
+
+    setTimeout(() => {
+      const newMainImg = mainMedia.querySelector(".ss-main-image");
+      enableZoomModal(newMainImg);
+     }, 50);
+
+    thumbButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
+      /* let zoommodal know image changed */
+      if (window.SSZoomModal && typeof window.SSZoomModal.updateImage === "function") {
+        window.SSZoomModal.updateImage(newSrc);
+      }
+    });
+  });
+
+  /*                     SCROLL ARROWS (THUMBS)                  */
+  /* =========================================================== */
+  const leftArrow  = document.querySelector(".ss-scroll-arrow.left");
+  const rightArrow = document.querySelector(".ss-scroll-arrow.right");
+  const scrollBox  = document.querySelector(".ss-thumbs");
+
+  if (leftArrow && rightArrow && scrollBox) {
+    leftArrow.addEventListener("click", () => {
+      scrollBox.scrollBy({ left: -200, behavior: "smooth" });
+    });
+
+    rightArrow.addEventListener("click", () => {
+      scrollBox.scrollBy({ left: 200, behavior: "smooth" });
+    });
+  }
+
+  /*                 CLICK MAIN IMAGE → OPEN ZOOM MODAL          */
+  /* =========================================================== */
+  document.addEventListener("click", (e) => {
+  const img = e.target.closest(".ss-main-image");
+  if (!img) return;
+  if (!window.SSZoomModal || typeof window.SSZoomModal.open !== "function") return;
+
+  window.SSZoomModal.open(img.dataset.full || img.src);
+  });
+
+/* ========================================= */
+/*              ADD-ON ENGINE (JS)           */
+/* ========================================= */
+  const addonWrapper = document.querySelector('.ss-addons-wrapper');
+  if (!addonWrapper) return; // No add-ons on this product
+
+  const addonCheckboxes = addonWrapper.querySelectorAll('.ss-addon-checkbox');
+  const priceDisplay = document.querySelector('[data-product-price]');
+  const originalPrice = parseFloat(priceDisplay?.dataset?.basePrice || 0);
+
+  function formatMoney(value) {
+    // Uses Shopify global money formatting
+    try { return Shopify.formatMoney(Math.round(value * 100)); }
+    catch { return `$${value.toFixed(2)}`; }
+  }
+
+  function recalcTotal() {
+    let addonTotal = 0;
+
+    addonCheckboxes.forEach(box => {
+      if (box.checked) {
+        const price = parseFloat(box.dataset.price || 0);
+        const discount = parseFloat(box.dataset.discount || 0);
+        const discounted = price - (price * (discount / 100));
+        addonTotal += discounted;
+      }
+    });
+
+    const final = originalPrice + addonTotal;
+
+    const finalPriceSlot = document.querySelector('.ss-final-price');
+    if (finalPriceSlot) {
+      finalPriceSlot.textContent = formatMoney(final);
+    }
+  }
+
+  // Update total when clicking add-ons
+  addonCheckboxes.forEach(box => {
+    box.addEventListener('change', recalcTotal);
+  });
+
+  // Add-ons + main product cart handling
+  const mainATC = document.querySelector('button[type="submit"][data-product-atc]');
+  if (mainATC) {
+    mainATC.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      const mainForm = mainATC.closest('form');
+      if (!mainForm) return;
+
+      const formData = new FormData(mainForm);
+
+      // Send main product to cart
+      await fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Add each selected add-on as its own cart line
+      for (const box of addonCheckboxes) {
+        if (box.checked) {
+          const variantId = box.dataset.variant;
+          const qty = 1;
+
+          await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: [{ id: variantId, quantity: qty }]
+            }),
+          });
+        }
+      }
+
+      // Redirect to cart or keep browsing
+      window.location.href = '/cart';
+    });
+  }
+
+  // Initial paint
+  recalcTotal();
+});
+
+</script>
+
+<script>
+/* ========================================================== */
+/*                SOOTHING SAUNAS — ADD-ON ENGINE             */
+/*     Handles add-on pricing, % discounts, and live totals   */
+/* ========================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  function enableZoomModal(imgEl) {
+  if (!imgEl) return;
+  if (!window.SSZoomModal || typeof window.SSZoomModal.open !== "function") return;
+
+  imgEl.onclick = () => {
+    window.SSZoomModal.open(imgEl.src);
+  };
+}
+  const priceDisplay = document.querySelector(".ss-price-amount");
+  const ogPriceEl    = document.querySelector("[data-product-price]");
+  const addons       = document.querySelectorAll(".ss-addon-option");
+
+  /* Safety net */
+  if (!priceDisplay || !ogPriceEl) return;
+
+  /* Base Product Price */
+  const basePrice = parseFloat(ogPriceEl.dataset.productPrice) || 0;
+
+  /* ============================= */
+  /*      ADD-ON PRICE HANDLER     */
+  /* ============================= */
+  function recalcAddons() {
+    let addonTotal = 0;
+
+    addons.forEach(addon => {
+      if (addon.checked) {
+        const price    = parseFloat(addon.dataset.price)    || 0;
+        const discount = parseFloat(addon.dataset.discount) || 0;
+
+        /* Apply percentage discount: (100 - discount)% */
+        const finalPrice = price * ((100 - discount) / 100);
+
+        addonTotal += finalPrice;
+      }
+    });
+
+    const finalTotal = basePrice + addonTotal;
+
+    /* Update on screen */
+    priceDisplay.textContent = Shopify.formatMoney(finalTotal * 100);
+  }
+
+  addons.forEach(addon => {
+    addon.addEventListener("change", recalcAddons);
+  });
+
+  /* =================================================== */
+  /*               VARIANT PRICE OVERRIDE                */
+  /*    So variants can update the base price if needed  */
+  /* =================================================== */
+  const variantSelects = document.querySelectorAll(".ss-variant-select");
+
+  variantSelects.forEach(select => {
+    select.addEventListener("change", e => {
+      const selected = e.target.selectedOptions[0];
+      const variantPrice = parseFloat(selected.dataset.varPrice) || null;
+
+      if (variantPrice !== null) {
+        ogPriceEl.dataset.productPrice = variantPrice;
+      } else {
+        ogPriceEl.dataset.productPrice = basePrice;
+      }
+
+      recalcAddons();
+    });
+  });
+
+
+  /* ============================================= */
+  /*      BUTTON → "ADD BUNDLE TO CART"            */
+  /* ============================================= */
+  const addToCartBtn = document.querySelector(".ss-add-to-cart");
+
+  if (addToCartBtn) {
+    addToCartBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      /* Gather selected addons */
+      const selectedAddons = [];
+      addons.forEach(addon => {
+        if (addon.checked) {
+          selectedAddons.push({
+            id: addon.value,
+            quantity: 1
+          });
+        }
+      });
+
+      /* Simple bundle format */
+      const mainVariantId = document.querySelector("[name='id']").value;
+
+      const cartItems = [
+        { id: mainVariantId, quantity: 1 },
+        ...selectedAddons
+      ];
+
+      fetch("/cart/add.js", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: cartItems })
+      })
+      .then(res => res.json())
+      .then(() => {
+        window.location.href = "/cart";
+      });
+    });
+  }
+
+});
+</script>
+
+{%-  comment -%} {%- endcomment -%}
+<!-- ========================================= -->
+<!--            PRODUCT BLOCK STREAM           -->
+<!-- ========================================= -->
+
+{% if section.blocks.size > 0 %}
+  {% for block in section.blocks %}
+    {% case block.type %}
+
+    <!-- ========================================= -->
+    <!--             VARIANT OPTIONS BLOCK         -->
+    <!-- ========================================= -->
+    {% when 'variant_display' %}
+      {% assign opt_index = block.settings.option_index | plus: 0 %}
+      {% assign option_name = product.options[opt_index] %}
+
+      <div class="ss-variant-block" {{ block.shopify_attributes }}>
+        <label class="ss-variant-label">{{ option_name }}</label>
+
+        {% if block.settings.display_mode == 'dropdown' %}
+          <select class="ss-variant-select">
+            {% for variant in product.variants %}
+              <option 
+                value="{{ variant.id }}"
+                {% if variant.selected %}selected{% endif %}
+                data-var-price="{{ variant.price | divided_by: 100 }}"
+              >
+                {{ variant.option1 }}{% if variant.option2 %} / {{ variant.option2 }}{% endif %}
+                {% if variant.option3 %} / {{ variant.option3 }}{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+
+        {% elsif block.settings.display_mode == 'buttons' %}
+          <div class="ss-variant-buttons">
+            {% for variant in product.variants %}
+              <button 
+                class="ss-variant-btn {% if variant == product.selected_or_first_available_variant %}active{% endif %}"
+                data-id="{{ variant.id }}"
+                data-var-price="{{ variant.price | divided_by: 100 }}"
+              >
+                {{ variant.options[opt_index] }}
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+<!-- ========================================= -->
+<!--               ADD-ONS BLOCK               -->
+<!-- ========================================= -->
+    {% when 'addon_block' %}
+      <div class="ss-addons" {{ block.shopify_attributes }}>
+  
+        {% if block.settings.addon_title != blank %}
+          <h3 class="ss-addon-title">{{ block.settings.addon_title }}</h3>
+        {% endif %}
+
+      {% assign addon_list = product.metafields.custom.addons %}
+
+      {% if addon_list and addon_list.value.size > 0 %}
+        {% for addon in addon_list.value %}
+          {% assign price = addon.price | default: 0 %}
+          {% assign discount = addon.discount | default: 0 %}
+          {% assign variant_id = addon.variant_id | default: blank %}
+
+      {# Compute discounted price safely #}
+          {% assign discount_amount = price | times: discount | divided_by: 100 %}
+          {% assign final_price = price | minus: discount_amount %}
+
+        <label class="ss-addon-option">
+          <input type="checkbox"
+               class="ss-addon-checkbox"
+               data-price="{{ price }}"
+               data-discount="{{ discount }}"
+               data-variant-id="{{ variant_id }}">
+        
+          <span class="ss-addon-label">{{ addon.label }}</span>
+
+      {% if block.settings.show_discounts and discount > 0 %}
+         <span class="ss-addon-price">
+           <span class="ss-addon-original">{{ price | money }}</span>
+           <span class="ss-addon-discounted">{{ final_price | money }}</span>
+         </span>
+        {% else %}
+         <span class="ss-addon-price">{{ price | money }}</span>
+        {% endif %}
+      </label>
+
+        {% endfor %}
+        {% else %}
+    <p class="ss-addon-empty">No add-ons available for this product.</p>
+  {% endif %}
+
+</div>
+
+    {% endcase %}
+  {% endfor %}
+{% endif %}
+{%-  comment -%} {%- endcomment -%}
+ 
+<script>
+/* ------------------------------------------------------ */
+/*   SOOTHING SAUNAS — MASTER JAVASCRIPT BUNDLE (FINAL)   */
+/*   Handles variants, add-ons, price updates, gallery    */
+/*   interactions, scrolling banner, and cart bundling.   */
+/* ------------------------------------------------------ */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ===================================================== */
+  /*                     1. PRICE ENGINE                   */
+  /* ===================================================== */
+  function updatePriceDisplay() {
+    const priceEl = document.querySelector(".ss-price-main");
+    if (!priceEl) return;
+
+    const basePriceRaw = parseFloat(priceEl.dataset.basePrice || 0);
+
+    let addonsTotal = 0;
+
+    document.querySelectorAll(".ss-addon-checkbox:checked").forEach(cb => {
+      const price = parseFloat(cb.dataset.price || 0);
+      const discount = parseFloat(cb.dataset.discount || 0);
+      const final = price - (price * (discount / 100));
+      addonsTotal += final;
+    });
+
+    const newTotal = basePriceRaw + addonsTotal;
+
+    const formatted = Shopify.formatMoney(newTotal * 100);
+    priceEl.innerHTML = formatted;
+  }
+
+  /* ===================================================== */
+  /*                 2. VARIANT SELECTION                  */
+  /* ===================================================== */
+  function selectVariant(optionIndex, value) {
+    const variants = window.productVariants || [];
+    if (!variants.length) return null;
+
+    const found = variants.find(v => v.options[optionIndex] === value);
+    if (found) {
+      const variantId = found.id;
+      const url = new URL(window.location.href);
+      url.searchParams.set("variant", variantId);
+      window.history.replaceState(null, "", url.toString());
+
+      document.querySelector("input[name='id']").value = variantId;
+
+      const priceEl = document.querySelector(".ss-price-main");
+      if (priceEl) {
+        priceEl.dataset.basePrice = found.price / 100;
+      }
+      updatePriceDisplay();
+    }
+  }
+
+  /* ===================================================== */
+  /*          3. BIND VARIANT BUTTON/DROPDOWN EVENTS       */
+  /* ===================================================== */
+  document.querySelectorAll("[data-variant-option]").forEach(container => {
+    const optionIndex = parseInt(container.dataset.optionIndex);
+
+    /* BUTTON MODE */
+    container.querySelectorAll("[data-value]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        container.querySelectorAll("[data-value]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectVariant(optionIndex, btn.dataset.value);
+      });
+    });
+
+    /* DROPDOWN MODE */
+    const select = container.querySelector("select");
+    if (select) {
+      select.addEventListener("change", () => {
+        selectVariant(optionIndex, select.value);
+      });
+    }
+  });
+
+  /* ===================================================== */
+  /*                  4. ADD-ONS ENGINE                    */
+  /* ===================================================== */
+  document.addEventListener("DOMContentLoaded", function () {
+
+  /* ---------------------------------------------------------
+     ADD-ON ENGINE — GLOBAL HOOKS
+     --------------------------------------------------------- */
+  const addonCheckboxes = document.querySelectorAll(".addon-checkbox");
+  const mainPriceEl = document.querySelector(".ss-price-final");
+  const originalPrice = parseFloat(
+    mainPriceEl?.dataset?.basePrice || mainPriceEl?.textContent.replace(/[^0-9.]/g, "") || 0
+  );
+
+  /* Track totals */
+  function calculateAddonTotal() {
+    let total = 0;
+
+    addonCheckboxes.forEach(cb => {
+      if (cb.checked) {
+        const price = parseFloat(cb.dataset.addonPrice || "0");
+        total += price;
+      }
+    });
+
+    return total;
+  }
+
+  /* Update displayed price */
+  function updateDisplayedPrice() {
+    if (!mainPriceEl) return;
+
+    const addons = calculateAddonTotal();
+    const newTotal = originalPrice + addons;
+
+    mainPriceEl.textContent = Shopify.formatMoney(newTotal * 100);
+  }
+
+  /* Watch for changes */
+  addonCheckboxes.forEach(cb => {
+    cb.addEventListener("change", updateDisplayedPrice);
+  });
+
+
+  /* ---------------------------------------------------------
+     ADD-ONS → ADD TO CART BUNDLE LOGIC
+     --------------------------------------------------------- */
+  const addToCartButton = document.querySelector("button[type='submit'][name='add']");
+  if (!addToCartButton) return;
+
+  addToCartButton.addEventListener("click", function (event) {
+    event.preventDefault();
+      const mainVariantId = document.querySelector("input[name='id']")?.value;
+  if (!mainVariantId || typeof addBundleToCart !== "function") return;
+
+  await addBundleToCart(mainVariantId);
+  window.location.href = '/cart';
+});
+
+    const form = addToCartButton.closest("form");
+    if (!form) return;
+
+    const formData = new FormData(form);
+
+    let mainVariantID = formData.get("id"); // Main product variant
+    let itemsToAdd = [];
+
+    /* 1) Add MAIN PRODUCT */
+    itemsToAdd.push({
+      id: mainVariantID,
+      quantity: 1
+    });
+
+    /* 2) Add selected add-ons */
+    addonCheckboxes.forEach(cb => {
+      if (cb.checked) {
+        itemsToAdd.push({
+          id: cb.dataset.addonVariant,
+          quantity: 1
+        });
+      }
+    });
+
+    /* 3) Perform AJAX add */
+    fetch(window.Shopify.routes.root + "cart/add.js", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: itemsToAdd })
+    })
+      .then(response => response.json())
+      .then(data => {
+        /* Redirect to cart, drawer, or refresh based on Prestige settings */
+        if (window.CartDrawer) {
+          window.CartDrawer.open();
+        } else {
+          window.location.href = "/cart";
+        }
+      })
+      .catch(err => console.error("Add-on bundle error:", err));
+  });
+
+});
+
+  /* ===================================================== */
+  /*        5. ADD TO CART (PRIMARY + ADD-ONS) BUNDLE      */
+  /* ===================================================== */
+  const atcBtn = document.querySelector(".ss-addtocart-btn");
+  if (atcBtn) {
+    atcBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const mainVariantId = document.querySelector("input[name='id']").value;
+
+      const itemsToAdd = [
+        {
+          id: mainVariantId,
+          quantity: 1
+        }
+      ];
+
+      document.querySelectorAll(".ss-addon-checkbox:checked").forEach(cb => {
+        const vid = cb.dataset.variantId;
+        if (vid) {
+          itemsToAdd.push({
+            id: vid,
+            quantity: 1
+          });
+        }
+      });
+
+      /* Shopify AJAX Cart API */
+      await fetch("/cart/add.js", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: itemsToAdd })
+      });
+
+      window.location.href = "/cart";
+    });
+  }
+
+  /* ===================================================== */
+  /*                 6. SCROLLING BANNER                   */
+  /* ===================================================== */
+  const banner = document.querySelector(".ss-scroll-banner");
+  if (banner) {
+    const messages = banner.dataset.messages.split("\n").map(t => t.trim()).filter(Boolean);
+    const speed = parseInt(banner.dataset.speed || 18);
+
+    function nextMessage() {
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+      banner.querySelector(".ss-scroll-text").textContent = msg;
+    }
+
+    nextMessage();
+
+    setInterval(() => {
+      nextMessage();
+    }, speed * 1000);
+  }
+
+  /* ===================================================== */
+  /*            7. PRODUCT GALLERY INTERACTION             */
+  /* ===================================================== */
+  const thumbs = document.querySelectorAll(".ss-thumb");
+  const mainImg = document.querySelector(".ss-main-image");
+
+  if (thumbs && mainImg) {
+    thumbs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const img = btn.querySelector('img');
+        const newSrc = img.src.split('?')[0] + '?width=2000';
+
+    // Replace the main image
+    mainMedia.innerHTML = `<img src="${newSrc}" class="ss-main-image" style="cursor:zoom-in;">`;
+
+   setTimeout(() => {
+    const initialImg = document.querySelector(".ss-main-image");
+    enableZoomModal(initialImg);
+    }, 50);
+
+  /* ===================================================== */
+  /*                     8. ZOOM MODAL                     */
+  /* ===================================================== */
+  if (window.SSZoomModal && typeof window.SSZoomModal.init === "function") {
+    window.SSZoomModal.init();
+  }
+
+});
+function addBundleToCart(mainVariantId, addonSelectors = ".ss-addon-checkbox:checked") {
+  const addons = Array.from(document.querySelectorAll(addonSelectors)).map(cb => ({
+    id: cb.dataset.variantId,
+    quantity: 1
+  }));
+
+  const items = [{ id: mainVariantId, quantity: 1 }, ...addons];
+
+  return fetch('/cart/add.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items })
+  });
+}
+</script>
+
+{% schema %}
+{
+  "name": "GPT Sauna Template",
+
+  "settings": [
+    { "type": "select", "id": "layout_mode", "label": "Page Layout Mode",  "default": "two_column",
+        "options": [ { "value": "one_column", "label": "1 Column (Stacked)" },
+                     { "value": "two_column", "label": "2 Columns (Gallery + Info)" }, 
+                     { "value": "two_plus_bottom", "label": "2 Columns + Full Width Bottom" } ] },
+    { "type": "range", "id": "left_col_width", "label": "Left Column Width (%)", "min": 40, "max": 80, "step": 1, "default": 65 },
+    { "type": "text", "id": "max_page_width", "label": "Max Page Width (px)", "default": "1600px" },
+    { "type": "range", "id": "gallery_radius", "label": "Gallery Corner Radius (px)", "min": 0, "max": 40, "step": 1, "default": 0 },
+    { "type": "range", "id": "thumb_size", "label": "Thumbnail Size (px)", "min": 40, "max": 150, "step": 5, "default": 80 },
+    { "type": "range", "id": "thumb_gap", "label": "Thumbnail Gap (px)", "min": 0, "max": 32, "step": 2, "default": 8 },
+    { "type": "range", "id": "thumb_count", "label": "Thumbnails Per Row", "min": 2, "max": 8, "step": 1, "default": 5 },
+    { "type": "range", "id": "gallery_margin_bottom", "label": "Spacing Under Gallery (px)", "min": 0, "max": 120, "step": 4, "default": 24 }
+  ],
+
+  "blocks": [
+    { "type": "scrolling_banner",
+      "name": "Scrolling Banner",
+      "settings": [
+        { "type": "textarea", "id": "messages", "label": "Messages (one per line)", "default": "Free Shipping On All Saunas\nLifetime Heater Warranty\nRelax, Restore, Renew" },
+        { "type": "font_picker", "id": "font_family", "label": "Font Family", "default": "playfair_display_i4"},
+        { "type": "text", "id": "font_family_override", "label": "Override Font Family (optional)", "default": "." },
+        { "type": "text", "id": "font_size", "label": "Font Size", "default": "16px" },
+        { "type": "select", "id": "font_weight", "label": "Weight", "default": "600", 
+            "options": [ { "value": "normal", "label": "Normal" },
+                         { "value": "bold", "label": "Bold" },
+                         { "value": "italic", "label": "Italic" },
+                         { "value": "300", "label": "300" },
+                         { "value": "400", "label": "400" },
+                         { "value": "500", "label": "500" },
+                         { "value": "600", "label": "600" },
+                         { "value": "700", "label": "700" } ] },
+        { "type": "color", "id": "text_color", "label": "Text Color", "default": "#c9a86a" },
+        { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#151515" },
+        { "type": "range", "id": "scroll_speed", "label": "Scroll Duration (seconds)", "min": 8, "max": 40, "step": 2, "default": 20 } ]
+    },
+
+    { "type": "title",
+      "name": "Title",
+      "settings": [
+        { "type": "select", "id": "heading_tag", "label": "Heading Tag", "default": "h1",  
+            "options": [ { "value": "h1", "label": "H1" },
+                         { "value": "h2", "label": "H2" },
+                         { "value": "h3", "label": "H3" } ] },
+        { "type": "font_picker", "id": "font_family", "label": "Font Family", "default": "playfair_display_n5" },
+        { "type": "text", "id": "font_family_override", "label": "Override Font Family (optional)", "default": "cormorant upright" },
+        { "type": "text", "id": "font_size", "label": "Font Size", "default": "30px" },
+        { "type": "select", "id": "font_weight", "label": "Weight", "default": "600", 
+            "options": [ { "value": "normal", "label": "Normal" },
+                         { "value": "bold", "label": "Bold" },
+                         { "value": "italic", "label": "Italic" },
+                         { "value": "300", "label": "300" },
+                         { "value": "400", "label": "400" },
+                         { "value": "500", "label": "500" },
+                         { "value": "600", "label": "600" },
+                         { "value": "700", "label": "700" } ] },
+        { "type": "color", "id": "font_color", "label": "Text Color", "default": "#FAF3E0" },
+        { "type": "text", "id": "line_height", "label": "Line Height", "default": "1.4" },
+        { "type": "text", "id": "letter_spacing", "label": "Letter Spacing", "default": "0px" },
+        { "type": "text", "id": "indent", "label": "Indent", "default": "0px" },
+        { "type": "text", "id": "margin_bottom", "label": "Bottom Spacing", "default": "5px" } ]
+    },
+
+    { "type": "collection_line",
+      "name": "Collection Line",
+      "settings": [
+        { "type": "text", "id": "collection_text", "label": "Collection Label", "default": "from the Canadian Timber Collection" },
+        { "type": "font_picker", "id": "font_family", "label": "Font Family", "default": "playfair_display_i5" },
+        /* { "type": "text", "id": "font_family_override", "label": "Override Font Family (optional)", "default": "cormorant upright" }, */
+        { "type": "text", "id": "font_size", "label": "Font Size", "default": "22px" },
+        { "type": "select", "id": "font_weight", "label": "Weight", "default": "italic",
+            "options": [ { "value": "normal", "label": "Normal" },
+                         { "value": "bold", "label": "Bold" },
+                         { "value": "italic", "label": "Italic" },
+                         { "value": "300", "label": "300" },
+                         { "value": "400", "label": "400" },
+                         { "value": "500", "label": "500" },
+                         { "value": "600", "label": "600" } ] },
+        { "type": "color", "id": "font_color", "label": "Text Color", "default": "#C9A86A" },
+        { "type": "text", "id": "line_height", "label": "Line Height", "default": "1.3" },
+        { "type": "text", "id": "letter_spacing", "label": "Letter Spacing", "default": "0.5px" },
+        { "type": "text", "id": "indent", "label": "Indent", "default": "30px" },
+        { "type": "text", "id": "margin_bottom", "label": "Bottom Spacing", "default": "5px" } ]
+    },
+
+    { "type": "vendor",
+      "name": "Vendor",
+      "settings": [
+        { "type": "text", "id": "vendor_prefix", "label": "Prefix", "default": "by " },
+        { "type": "font_picker", "id": "font_family", "label": "Font Family", "default": "lato_n4" },
+        { "type": "text", "id": "font_family_override", "label": "Override Font Family (optional)", "default": "cormorant upright" },
+        { "type": "text", "id": "font_size", "label": "Font Size", "default": "16px" },
+        { "type": "select", "id": "font_weight", "label": "Weight", "default": "500",
+            "options": [ { "value": "normal", "label": "Normal" },
+                         { "value": "bold", "label": "Bold" },
+                         { "value": "italic", "label": "Italic" },
+                         { "value": "300", "label": "300" },
+                         { "value": "400", "label": "400" },
+                         { "value": "500", "label": "500" },
+                         { "value": "600", "label": "600" } ] },
+        { "type": "color", "id": "font_color", "label": "Text Color", "default": "#FAF3E0" },
+        { "type": "text", "id": "line_height", "label": "Line Height", "default": "1.3" },
+        { "type": "text", "id": "letter_spacing", "label": "Letter Spacing", "default": "0px" },
+        { "type": "text", "id": "indent", "label": "Indent", "default": "60px" },
+        { "type": "text", "id": "margin_bottom", "label": "Bottom Spacing", "default": "16px" } ] 
+      },
+
+    { "type": "separator",
+      "name": "Separator",
+      "settings": [
+        { "type": "range", "id": "sep_thickness", "label": "Line Thickness (px)", "min": 1, "max": 10, "step": 1, "default": 2 },
+        { "type": "range", "id": "sep_width", "label": "Line Width (%)", "min": 10, "max": 100, "step": 5, "default": 100 },
+        { "type": "color", "id": "sep_color", "label": "Line Color", "default": "#a08119" },
+        { "type": "range", "id": "sep_opacity", "label": "Opacity", "min": 0.1, "max": 1, "step": 0.1, "default": 0.3 },
+        { "type": "range", "id": "sep_margin", "label": "Vertical Margin (px)", "min": 0, "max": 80, "step": 4, "default": 24 } ]
+    },
+
+    { "type": "description",
+      "name": "Description",
+      "settings": [
+        { "type": "font_picker", "id": "font_family", "label": "Font Family", "default": "lato_n4" },
+        { "type": "text", "id": "font_family_override", "label": "Override Font Family (optional)", "default": "cormorant upright" },
+        { "type": "text", "id": "font_size", "label": "Font Size", "default": "16px" },
+        { "type": "select", "id": "font_weight", "label": "Weight", "default": "normal",
+            "options": [ { "value": "normal", "label": "Normal" },
+                         { "value": "bold", "label": "Bold" },
+                         { "value": "italic", "label": "Italic" },
+                         { "value": "300", "label": "300" },
+                         { "value": "400", "label": "400" },
+                         { "value": "500", "label": "500" },
+                         { "value": "600", "label": "600" } ] },
+        { "type": "color", "id": "font_color", "label": "Text Color", "default": "#FAF3E0"},
+        { "type": "text", "id": "line_height", "label": "Line Height", "default": "1.55" },
+        { "type": "text", "id": "letter_spacing", "label": "Letter Spacing", "default": "0px" },
+        { "type": "text", "id": "indent", "label": "Indent", "default": "0px" },
+        { "type": "text", "id": "margin_bottom", "label": "Bottom Spacing", "default": "32px" } ]
+    },
+
+    { "type": "variant_display",
+      "name": "Variant Options",
+      "settings": [
+        { "type": "select", "id": "option_index", "label": "Which Option Group?", "default": "0",
+            "options": [ { "value": "0", "label": "Option 1" },
+                         { "value": "1", "label": "Option 2" },
+                         { "value": "2", "label": "Option 3" } ] },
+        { "type": "select", "id": "font_weight", "label": "Weight", "default": "600", 
+            "options": [ { "value": "normal", "label": "Normal" },
+                         { "value": "bold", "label": "Bold" },
+                         { "value": "italic", "label": "Italic" },
+                         { "value": "300", "label": "300" },
+                         { "value": "400", "label": "400" },
+                         { "value": "500", "label": "500" },
+                         { "value": "600", "label": "600" },
+                         { "value": "700", "label": "700" } ] },
+        { "type": "select", "id": "display_mode", "label": "Display Mode", "default": "buttons",
+            "options": [ { "value": "buttons", "label": "Buttons" },
+                         { "value": "dropdown", "label": "Dropdown" } ] } ]
+    },
+
+    { "type": "addons_block",
+      "name": "Add-On Items",
+      "settings": [
+        { "type": "text", "id": "addon_title", "label": "Optional Section Heading", "default": "Customize Your Experience" },
+        { "type": "metaobject", "id": "addon_list", "label": "Add-On List", "metaobject_type": "addon_items" } ]
+    },
+
+    { "type": "specs_link",
+      "name": "Product Specs Link",
+      "settings": [
+        { "type": "text", "id": "specs_url", "label": "Specs URL", "default": "/pages/specifications" },
+        { "type": "text", "id": "specs_label", "label": "Link Label", "default": "View Specifications" } ]
+    },
+
+    { "type": "price_block",
+      "name": "Price + Add to Cart",
+      "settings": [
+        { "type": "font_picker", "id": "font_family", "label": "Font Family", "default": "playfair_display_n4" },
+        { "type": "text", "id": "font_family_override", "label": "Override Font Family (optional)", "default": "cormorant upright" },
+        { "type": "text", "id": "font_size", "label": "Font Size", "default": "16px" },
+        { "type": "select", "id": "font_weight", "label": "Weight", "default": "600", 
+            "options": [ { "value": "normal", "label": "Normal" },
+                         { "value": "bold", "label": "Bold" },
+                         { "value": "italic", "label": "Italic" },
+                         { "value": "300", "label": "300" },
+                         { "value": "400", "label": "400" },
+                         { "value": "500", "label": "500" },
+                         { "value": "600", "label": "600" },
+                         { "value": "700", "label": "700" } ] },
+        { "type": "text", "id": "button_label", "label": "Button Label", "default": "Add to Cart" } ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "My Custom Sauna Template",
+      "blocks": [
+        { "type": "scrolling_banner" },
+        { "type": "title" },
+        { "type": "collection_line" },
+        { "type": "vendor" },
+        { "type": "separator" },
+        { "type": "description" },
+        { "type": "separator" },
+        { "type": "variant_display" },
+        { "type": "addons_block" },
+        { "type": "specs_link" },
+        { "type": "price_block" }
+      ]
+    }
+  ]
+}
+{% endschema %}

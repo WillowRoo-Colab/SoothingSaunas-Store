@@ -1,0 +1,28 @@
+{% comment %}
+
+SOOTHING SAUNAS — GLOBAL ROUNDED IMAGE OVERRIDE
+Redirects any standard image render to your rounded image style.
+Use this when you want consistent rounded corners and shadows
+across all product, collection, or media images.
+
+USE WITH:
+  {% render 'my-roundedimageoverride', image: product.featured_image, alt: product.title %}
+
+{% endcomment %}
+
+{% assign img_obj = image %}
+{% assign img_alt = alt | default: img_obj.alt | default: '' %}
+
+{% if img_obj %}
+  {% render 'my-roundedimage',
+    image: img_obj,
+    alt: img_alt,
+    width: width,
+    height: height,
+    radius: radius,
+    shadow: shadow,
+    background: background,
+    hover_scale: hover_scale,
+    fit: fit
+  %}
+{% endif %}
