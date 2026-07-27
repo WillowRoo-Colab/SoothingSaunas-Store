@@ -5,6 +5,14 @@ export const SHOP_QUERY = `#graphql
       primaryDomain {
         url
       }
+      brand {
+        logo {
+          image {
+            url
+            altText
+          }
+        }
+      }
     }
   }
 `;
@@ -15,5 +23,13 @@ export interface ShopQueryData {
     primaryDomain: {
       url: string;
     };
+    brand: {
+      logo: {
+        image: {
+          url: string;
+          altText: string | null;
+        } | null;
+      } | null;
+    } | null;
   };
 }
