@@ -32,6 +32,14 @@ If implementation conflicts arise, report the conflict rather than changing the 
 
 ---
 
+## Framework Notes
+
+@AGENTS.md
+
+Read `AGENTS.md` and, where relevant, `node_modules/next/dist/docs/` before writing Next.js-specific code. The installed Next.js version may postdate this model's training data — do not assume training-data conventions still apply.
+
+---
+
 ## Development Philosophy
 
 - Implement before redesigning.
