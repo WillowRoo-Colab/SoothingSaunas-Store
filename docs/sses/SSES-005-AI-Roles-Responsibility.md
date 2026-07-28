@@ -6,10 +6,10 @@
 |---|---|
 | **Document ID** | SSES-005 |
 | **Title** | AI Roles & Responsibilities |
-| **Version** | 0.1 |
+| **Version** | 0.2 |
 | **Status** | Approved |
 | **Authority Level** | Engineering Standard |
-| **Revision Date** | July 26, 2026 |
+| **Revision Date** | July 27, 2026 |
  
 ---
  
@@ -92,6 +92,7 @@ Claude Code is authorized to perform implementation work that is directly suppor
 - Refactor internal code when behavior and interfaces remain unchanged and the refactor supports the active task.
 - Add tests, type definitions, comments, validation, and non-breaking safeguards needed to satisfy approved requirements.
 - Recommend improvements outside the active milestone, provided they are captured separately and do not derail current work.
+- Proactively voice a genuinely good idea in the moment it's noticed during implementation — a feature, refinement, or detail that would meaningfully improve the current page or experience — even if it's outside the immediate task. The idea shall be presented as an option for the owner to decide on, not built unilaterally. "Freeze the forest, improve the trees" governs scope discipline for building; it is not a reason to withhold a worthwhile idea from the owner.
  
 ## Claude Code MUST obtain owner approval before
  

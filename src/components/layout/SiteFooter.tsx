@@ -1,18 +1,18 @@
 import Link from "next/link";
-import { primaryNav, collectionHref } from "@/lib/navigation";
+import { footerNav } from "@/lib/navigation";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="mt-auto bg-charcoal text-cream">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
+      <div className="mx-auto max-w-[1600px] px-4 py-10 sm:px-8">
         <nav aria-label="Footer">
           <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            {primaryNav.map((item) => (
-              <li key={item.handle}>
+            {footerNav.map((item) => (
+              <li key={item.label}>
                 <Link
-                  href={collectionHref(item.handle)}
+                  href={item.href!}
                   className="transition-colors hover:text-gold"
                 >
                   {item.label}

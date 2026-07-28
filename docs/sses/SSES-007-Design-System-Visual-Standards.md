@@ -6,10 +6,10 @@
 |---|---|
 | **Document ID** | SSES-007 |
 | **Title** | Design System & Visual Standards |
-| **Version** | 0.1 |
+| **Version** | 0.2 |
 | **Status** | Approved |
 | **Authority Level** | Engineering Standard |
-| **Revision Date** | July 26, 2026 |
+| **Revision Date** | July 27, 2026 |
 
 # 1. Purpose
 
@@ -61,6 +61,19 @@ Interface implementations MUST use named design tokens rather than repeated hard
 - Silver SHOULD be used for low-emphasis structural detail rather than primary calls to action.
 - Color combinations MUST satisfy the contrast requirements established by SSES-011.
 - New colors MUST NOT be introduced into the permanent palette without owner approval and an SSES revision.
+
+## 4.2 Contextual Tone: Dark-Dominant vs. Light-Dominant
+
+The approved palette supports two deliberate tonal modes, both built from the same tokens. Which mode leads is determined by the guest's task on that surface, not by a fixed page-type list.
+
+| Mode | Composition | Use When |
+|---|---|---|
+| **Dark-dominant** | Charcoal background, cream text, gold accents. | The guest is browsing, comparing, or picturing themselves using a product — homepage, collection pages, product pages. The goal is an immersive, calm, relaxing feeling, consistent with imagining oneself relaxing in the product itself. |
+| **Light-dominant** | Cream background, charcoal text, gold accents. | The guest is reading or learning — journal/blog content, buying guides, FAQs, policy pages. The goal is sustained readability without losing brand identity. |
+
+- The homepage SHOULD be dark-dominant throughout, including sections that might otherwise default to a light surface (for example, category browsing), because the entire homepage is a browsing/first-impression experience rather than a reading one. See SSES-003 for the guest-experience rationale.
+- Checkout is Shopify-hosted (SSES-006); its branding SHOULD be configured in Shopify's Checkout branding settings to approximate this palette, but is not directly styled by storefront code.
+- Mode selection is a per-surface design decision, not a global theme toggle. A single page MAY transition between modes across sections if the task genuinely changes (for example, a product page's reading-heavy specification table MAY use a light-dominant panel within an otherwise dark-dominant page), but transitions SHOULD be deliberate and infrequent rather than alternating section-by-section without reason.
 
 # 5. Typography
 

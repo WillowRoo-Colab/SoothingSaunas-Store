@@ -11,6 +11,8 @@ export interface SiteImage {
   originalFilename: string;
   status: "active" | "sunset";
   uploadedAt: string;
+  focalX: number;
+  focalY: number;
 }
 
 interface SiteImageRow {
@@ -21,6 +23,8 @@ interface SiteImageRow {
   original_filename: string;
   status: "active" | "sunset";
   uploaded_at: string;
+  focal_x: number;
+  focal_y: number;
 }
 
 function toSiteImage(row: SiteImageRow): SiteImage {
@@ -31,6 +35,8 @@ function toSiteImage(row: SiteImageRow): SiteImage {
     originalFilename: row.original_filename,
     status: row.status,
     uploadedAt: row.uploaded_at,
+    focalX: row.focal_x,
+    focalY: row.focal_y,
   };
 }
 
@@ -109,6 +115,60 @@ export async function uploadAndActivateImage(
 
   if (insertError) throw insertError;
   return toSiteImage(data);
+}
+
+// Admin-only — permanently removes an image (storage file + row). This is
+// distinct from the sunset lifecycle: sunset preserves history for reuse,
+// delete is for cleaning up mistaken or duplicate uploads.
+export async function deleteImage(id: string): Promise<void> {
+  await requireAdminSession();
+  const supabase = createAdminClient();
+
+  const { data: row, error: fetchError } = await supabase
+    .from("site_images")
+    .select("storage_path")
+    .eq("id", id)
+    .single<Pick<SiteImageRow, "storage_path">>();
+
+  if (fetchError) throw fetchError;
+
+  const { error: storageError } = await supabase.storage
+    .from(BUCKET)
+    .remove([row.storage_path]);
+
+  // Ignore "object not found" — the row is still worth cleaning up even if
+  // the file was already removed some other way.
+  if (storageError && !/not.*found/i.test(storageError.message)) {
+    throw storageError;
+  }
+
+  const { error: deleteError } = await supabase
+    .from("site_images")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) throw deleteError;
+}
+
+// Admin-only — adjusts which part of the image stays visible when it's
+// cropped with object-cover in a frame narrower/shorter than its own aspect
+// ratio. Stored as a percentage (0-100) from the top-left.
+export async function updateFocalPoint(
+  id: string,
+  focalX: number,
+  focalY: number
+): Promise<void> {
+  await requireAdminSession();
+
+  const clamp = (n: number) => Math.min(100, Math.max(0, Math.round(n)));
+
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("site_images")
+    .update({ focal_x: clamp(focalX), focal_y: clamp(focalY) })
+    .eq("id", id);
+
+  if (error) throw error;
 }
 
 // Admin-only — reapply a prior image from history as the active one.

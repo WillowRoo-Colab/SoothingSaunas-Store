@@ -6,7 +6,7 @@ export function CollectionCard({ collection }: { collection: Collection }) {
   return (
     <Link
       href={`/collections/${collection.handle}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-silver"
+      className="group flex flex-col overflow-hidden rounded-lg border border-gold/20 bg-charcoal transition-colors duration-300 hover:border-gold/60"
     >
       <div className="relative flex aspect-4/3 w-full items-center justify-center overflow-hidden bg-charcoal">
         {collection.imageUrl ? (
@@ -23,7 +23,7 @@ export function CollectionCard({ collection }: { collection: Collection }) {
           </span>
         )}
       </div>
-      <span className="px-4 py-3 text-sm font-medium text-charcoal">
+      <span className="px-4 py-3 text-sm font-medium text-cream">
         {collection.title}
       </span>
     </Link>

@@ -5,10 +5,10 @@
 |---|---|
 | **Document ID** | SSES-009 |
 | **Title** | Content Strategy |
-| **Version** | 0.1 |
+| **Version** | 0.2 |
 | **Status** | Approved |
 | **Authority Level** | Engineering Standard |
-| **Revision Date** | July 26, 2026 |
+| **Revision Date** | July 27, 2026 |
  
 # 1. Purpose
 This specification establishes the approved content strategy for Soothing Saunas. It ensures that product copy, educational material, buying guidance, journal content, and search-oriented writing consistently support the company's guest-first mission while remaining accurate, useful, readable, and maintainable.
@@ -33,6 +33,7 @@ This document governs content meaning, voice, evidence, structure, and editorial
 | **Brand Consistency** | Content shall reflect the Soothing Saunas philosophy, approved terminology, and guest experience standards without becoming repetitive or scripted. |
 | **Progressive Disclosure** | Essential decisions shall be understandable quickly, while deeper technical, health, and comparison detail remains available for guests who need it. |
 | **Maintainable Authority** | Published content shall have a clear source, owner, review condition, and revision path so outdated information does not quietly remain active. |
+| **Worthwhile Investment** | Product and category content shall help a guest understand durability, craftsmanship, and long-term value so a purchase reads as a considered investment in wellbeing rather than an impulse buy. This shall be earned through specific, truthful detail, never through superlatives. |
  
 # 4. Audience, Voice, and Terminology
 ## 4.1 Primary Audience
@@ -46,6 +47,7 @@ Content shall be written for guests who may range from first-time wellness shopp
 | **Supportive** | Anticipate common concerns and guide the guest without talking down to them. |
 | **Transparent** | State what is known, what varies, what depends on product configuration, and what requires professional advice. |
 | **Practical** | Prioritize usable guidance, decision criteria, dimensions, installation needs, care expectations, and ownership realities. |
+| **Investment-Minded** | Frame products in terms of durability, quality of materials, and long-term ownership value rather than price or urgency. |
  
 ## 4.3 Required Terminology
 - Use `guest` rather than `customer` in editorial and experience-oriented content unless legal, transactional, or system terminology requires otherwise.

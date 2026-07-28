@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { uploadAndActivateImage, activateImage } from "@/lib/images";
+import {
+  uploadAndActivateImage,
+  activateImage,
+  deleteImage,
+  updateFocalPoint,
+} from "@/lib/images";
 
 export async function signOut() {
   const supabase = await createClient();
@@ -33,6 +38,28 @@ export async function reapplyImage(formData: FormData) {
   }
 
   await activateImage(id, slot);
+  revalidatePath("/store-settings");
+  revalidatePath("/");
+}
+
+export async function removeImage(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+
+  if (!id) {
+    throw new Error("An image id is required");
+  }
+
+  await deleteImage(id);
+  revalidatePath("/store-settings");
+  revalidatePath("/");
+}
+
+export async function saveFocalPoint(
+  id: string,
+  focalX: number,
+  focalY: number
+) {
+  await updateFocalPoint(id, focalX, focalY);
   revalidatePath("/store-settings");
   revalidatePath("/");
 }
