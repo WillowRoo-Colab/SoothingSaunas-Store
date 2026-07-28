@@ -7,10 +7,10 @@ import { leftNav, rightNav, type NavItem } from "@/lib/navigation";
 import { MobileNav } from "./MobileNav";
 import { SearchInput } from "./SearchInput";
 
-export const HEADER_MAX = 325;
+export const HEADER_MAX = 200;
 const HEADER_MIN = 125;
-const LOGO_MAX = 300;
-const LOGO_MIN = 125;
+const LOGO_MAX = 200;
+const LOGO_MIN = 120;
 const SHRINK_DISTANCE = 200;
 
 function NavLink({ item }: { item: NavItem }) {
@@ -116,6 +116,14 @@ export function ShrinkingHeader() {
           style={{ opacity: 0.001 }}
           className="hidden flex-col items-end gap-2 pb-4 lg:flex"
         >
+          <div className="flex items-center gap-4 text-xs font-medium text-cream">
+          {/* SEARCH BAR INPUT - TODO(owner): create search funcitonality across entire site w/ blog inclusion if possible. */}
+            <SearchInput className="w-48 rounded border border-cream/30 bg-transparent px-2 py-1 text-xs text-cream placeholder:text-cream/50 focus:border-gold focus:outline-none" />
+          {/* LOGIN/CART NAV - TODO(owner): no account/cart system built yet — inert. */}
+            <span className="cursor-default opacity-70">Login</span>
+            <span className="cursor-default opacity-70">Cart</span>
+          </div>
+
           <nav aria-label="Secondary">
             <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-cream">
               {rightNav.map((item) => (
@@ -126,13 +134,7 @@ export function ShrinkingHeader() {
             </ul>
           </nav>
 
-          <SearchInput className="w-48 rounded border border-cream/30 bg-transparent px-2 py-1 text-xs text-cream placeholder:text-cream/50 focus:border-gold focus:outline-none" />
-
-          <div className="flex items-center gap-4 text-xs font-medium text-cream">
-            {/* TODO(owner): no account/cart system built yet — inert. */}
-            <span className="cursor-default opacity-70">Login</span>
-            <span className="cursor-default opacity-70">Cart</span>
-          </div>
+          
         </div>
       </div>
 
