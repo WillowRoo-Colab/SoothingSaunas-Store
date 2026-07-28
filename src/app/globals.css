@@ -7,9 +7,21 @@
   --color-gold: #c9a86a;
   --color-silver: #e0e0e0;
 
+  /* Extra shade granularity for docs/designs/Homepage-Build-Blueprint.md —
+     additive only, same brand hues, never used outside that experimental
+     page (/homepage-test) today. */
+  --color-charcoal-900: #1c1c1b;
+  --color-charcoal-850: #232321;
+  --color-charcoal-800: #2a2926;
+  --color-cream-050: #fffaf0;
+  --color-cream-150: #f3ead6;
+  --color-gold-400: #d8bb83;
+  --color-gold-600: #a98a51;
+
   /* SSES-007: Cormorant Upright for display/brand, Lato for interface/body */
   --font-display: var(--font-cormorant-upright);
   --font-sans: var(--font-lato);
+  --font-heading: var(--font-playfair-display);
 }
 
 :root {

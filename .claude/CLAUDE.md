@@ -10,8 +10,7 @@ The objective is to create an education-first wellness platform that prioritizes
 
 ## Engineering Specifications
 
-Before making architectural decisions or modifying code, read the following specifications:
-
+Before making architectural decisions or modifying code, read the following specifications :
 1. docs/sses/SSES-001-Project-Architecture.md
 2. docs/sses/SSES-002-Company-Philosophy.md
 3. docs/sses/SSES-003-Guest-Experience-Standards.md
@@ -27,8 +26,10 @@ Before making architectural decisions or modifying code, read the following spec
 13. docs/sses/SSES-013-Security-Standards.md
 
 These documents are authoritative.
-
 If implementation conflicts arise, report the conflict rather than changing the specifications.
+
+Individual page blueprints tailored to specific asks. Content in blueprint documents may change as needs/vision evolves. If any content appears outdated, or conflicts with other documents, pleaes bring to my attention. 
+14. docs/designs/Homepage-Build-Blueprint.md
 
 ---
 
