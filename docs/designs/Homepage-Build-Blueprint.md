@@ -377,7 +377,7 @@ At the lower-right edge, include a restrained “Begin your reset” scroll cue 
 
 ### Section heading
 
-`<br/><br/>Choose where your reset begins.`
+`Choose where your reset begins.`
 
 ### Purpose
 
