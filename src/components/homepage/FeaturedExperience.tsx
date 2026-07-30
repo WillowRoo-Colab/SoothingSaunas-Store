@@ -71,7 +71,7 @@ export function FeaturedExperience({
               View the {product.title}
             </SsButton>
             <SsButton
-              href="/homepage-test/buying-guide"
+              href="/buying-guide"
               variant="outline-dark"
             >
               See what to know before buying

@@ -56,14 +56,14 @@ export function DiscoveryBridge() {
           </ul>
 
           <SsButton
-            href="/homepage-test/quiz"
+            href="/quiz"
             variant="primary-dark"
             className="mt-6 w-full"
           >
             Take the 3-question quiz
           </SsButton>
           <Link
-            href="/homepage-test/compare-saunas"
+            href="/compare-saunas"
             className="mt-4 block text-center text-sm text-[#f7f1e5]/80 underline decoration-gold/40 underline-offset-4 hover:text-gold"
           >
             Compare sauna types instead

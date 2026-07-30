@@ -27,7 +27,7 @@ export function LearningBridgeFeature({
           heading="Not all sauna heat feels the same."
           body="Traditional, infrared, and steam systems warm the body and the room differently. The best choice depends on the experience you want, the space you have, and how you plan to use it."
           ctaLabel="Compare sauna types"
-          ctaHref="/homepage-test/compare-saunas"
+          ctaHref="/compare-saunas"
         />
       </div>
     </section>

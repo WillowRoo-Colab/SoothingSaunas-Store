@@ -46,10 +46,10 @@ export function CinematicHero({
             you build a space that feels better to live in.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <SsButton href="/homepage-test/saunas" variant="primary-dark">
+            <SsButton href="/saunas" variant="primary-dark">
               Explore Saunas
             </SsButton>
-            <SsButton href="/homepage-test/quiz" variant="outline-dark">
+            <SsButton href="/quiz" variant="outline-dark">
               Find Your Fit
             </SsButton>
           </div>
