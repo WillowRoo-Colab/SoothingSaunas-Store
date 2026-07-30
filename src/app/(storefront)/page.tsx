@@ -78,16 +78,17 @@ export default async function Home() {
     <main id="main-content" className="font-sans">
       {/* Full-bleed backdrop so the sides beyond the hero's 1440px column
           (and the fixed header floating over it) read as dark, not the
-          page's cream background — the hero itself is untouched. */}
-      <div className="bg-charcoal">
+          page's cream background — the hero itself is untouched. pb-10
+          gives the hero's own gold glow (shadow-[...] in CinematicHero)
+          room to fade into the same charcoal below it, continuing the
+          glow visible at the hero's sides rather than cutting it off
+          with a hard edge. */}
+      <div className="bg-charcoal pb-10">
         <CinematicHero
           imageUrl={heroImage?.publicUrl ?? null}
           focalX={heroImage?.focalX}
           focalY={heroImage?.focalY}
         />
-        {/* Deliberate cream break below the hero, width-matched to the
-            picture rather than the full-bleed backdrop around it. */}
-        <div className="mx-auto h-3 w-full max-w-[1440px] bg-cream" />
       </div>
       <GuidedProductPathways cards={pathwayCards} />
       <DiscoveryBridge />
