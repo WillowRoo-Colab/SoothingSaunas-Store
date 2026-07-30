@@ -37,3 +37,101 @@ export interface ProductByHandleQueryData {
     };
   } | null;
 }
+
+// Sauna product template (SSES-006: presentation only — commerce data is
+// read live, nothing here duplicates Shopify's pricing/inventory/cart).
+export const PRODUCT_DETAIL_BY_HANDLE_QUERY = `#graphql
+  query ProductDetailByHandle($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      vendor
+      descriptionHtml
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      compareAtPriceRange {
+        minVariantPrice {
+          amount
+        }
+      }
+      collections(first: 1) {
+        nodes {
+          title
+          handle
+        }
+      }
+      media(first: 20) {
+        nodes {
+          ... on MediaImage {
+            id
+            image {
+              url
+              altText
+            }
+          }
+        }
+      }
+      variants(first: 1) {
+        nodes {
+          id
+        }
+      }
+      metafields(
+        identifiers: [
+          { namespace: "custom", key: "personcap" }
+          { namespace: "custom", key: "heat_style" }
+          { namespace: "custom", key: "productspecs" }
+          { namespace: "custom", key: "eheater_options" }
+        ]
+      ) {
+        key
+        value
+        type
+        reference {
+          ... on GenericFile {
+            url
+          }
+        }
+      }
+    }
+  }
+`;
+
+export interface ProductDetailQueryData {
+  product: {
+    id: string;
+    title: string;
+    handle: string;
+    vendor: string;
+    descriptionHtml: string;
+    priceRange: {
+      minVariantPrice: { amount: string; currencyCode: string };
+    };
+    compareAtPriceRange: {
+      minVariantPrice: { amount: string };
+    };
+    collections: {
+      nodes: Array<{ title: string; handle: string }>;
+    };
+    media: {
+      nodes: Array<{
+        id: string;
+        image?: { url: string; altText: string | null };
+      }>;
+    };
+    variants: {
+      nodes: Array<{ id: string }>;
+    };
+    metafields: Array<{
+      key: string;
+      value: string;
+      type: string;
+      reference: { url: string } | null;
+    } | null>;
+  } | null;
+}

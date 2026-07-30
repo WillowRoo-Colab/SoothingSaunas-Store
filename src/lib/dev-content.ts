@@ -51,6 +51,13 @@ export const devContent = {
     devLabel: "need to link, not active",
     fallback: "",
   },
+  addToOrderPending: {
+    id: "add-to-order-pending",
+    ssesReference: "SSES-006",
+    devLabel: "Add to Order — cart not wired yet (Storefront Cart API pending)",
+    fallback:
+      "Online ordering isn't available yet — call or email to complete your order.",
+  },
 } as const satisfies Record<string, DevContentEntry>;
 
 const isProduction = process.env.NODE_ENV === "production";

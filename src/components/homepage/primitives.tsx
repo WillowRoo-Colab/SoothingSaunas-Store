@@ -31,7 +31,7 @@ export function SectionShell({
     <section
       id={id}
       data-tone={tone}
-      className={`relative overflow-clip py-18 sm:py-24 ${TONE_CLASSES[tone]} ${className ?? ""}`}
+      className={`relative flow-root overflow-clip py-18 sm:py-24 ${TONE_CLASSES[tone]} ${className ?? ""}`}
     >
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8">
         {(eyebrow || title || description) && (
