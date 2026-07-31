@@ -57,6 +57,13 @@ export default async function LoginPage({
           Sign in
         </button>
       </form>
+
+      <a
+        href="/store-settings/reset-password"
+        className="mt-4 text-sm text-charcoal/70 underline hover:text-charcoal"
+      >
+        Forgot password?
+      </a>
     </main>
   );
 }

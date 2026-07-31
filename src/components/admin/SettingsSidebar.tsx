@@ -9,6 +9,7 @@ const tabs = [
   { label: "Banners", href: "/store-settings/banners" },
   { label: "Text Values", href: "/store-settings/text-values" },
   { label: "Stylings", href: "/store-settings/stylings" },
+  { label: "Administrator Security", href: "/store-settings/admin-security" },
 ] as const;
 
 // Curved divider between stacked tabs — flat, then a sharp rise near the
