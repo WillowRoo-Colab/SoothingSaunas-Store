@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 // Every other footer link is still a decorative placeholder (see SSES-010 —
-// no dead links yet since the real pages don't exist). "Admin" is the one
-// real destination today.
-const LINK_HREFS: Partial<Record<string, string>> = {
-  Admin: "/store-settings",
+// no dead links yet since the real pages don't exist). "About Us" and
+// "Admin" are real destinations today; Admin stays visually dimmed since
+// it's not a guest-facing destination.
+const LINK_HREFS: Partial<Record<string, { href: string; dimmed?: boolean }>> = {
+  "About Us": { href: "/about" },
+  Admin: { href: "/store-settings", dimmed: true },
 };
 
 const COLUMNS = [
@@ -49,13 +51,17 @@ export function SiteFooter() {
               </p>
               <ul className="mt-4 space-y-2 text-sm opacity-85">
                 {col.links.map((link) => {
-                  const href = LINK_HREFS[link];
+                  const entry = LINK_HREFS[link];
                   return (
                     <li key={link}>
-                      {href ? (
+                      {entry ? (
                         <Link
-                          href={href}
-                          className="opacity-60 transition-opacity hover:text-gold hover:opacity-100"
+                          href={entry.href}
+                          className={
+                            entry.dimmed
+                              ? "opacity-60 transition-opacity hover:text-gold hover:opacity-100"
+                              : "transition-colors hover:text-gold"
+                          }
                         >
                           {link}
                         </Link>
