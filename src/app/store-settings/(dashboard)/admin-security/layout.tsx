@@ -1,5 +1,5 @@
 import { requireAdminSession } from "@/lib/supabase/auth";
-import { AdminSecurityTabs } from "@/components/admin/AdminSecurityTabs";
+import { SubNavTabs } from "@/components/admin/SubNavTabs";
 
 const ALL_TABS = [
   {
@@ -37,7 +37,7 @@ export default async function AdminSecurityLayout({
   return (
     <div>
       <h1 className="font-display text-2xl text-charcoal">Administrator Security</h1>
-      <AdminSecurityTabs tabs={visibleTabs} />
+      <SubNavTabs tabs={visibleTabs} ariaLabel="Administrator security sections" />
       <div className="mt-6">{children}</div>
     </div>
   );

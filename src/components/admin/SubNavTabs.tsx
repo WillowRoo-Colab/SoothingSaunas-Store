@@ -3,19 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export interface AdminSecurityTab {
+export interface SubNavTab {
   label: string;
   href: string;
 }
 
-export function AdminSecurityTabs({ tabs }: { tabs: AdminSecurityTab[] }) {
+// Shared top sub-tab bar for any admin settings category (sidebar =
+// category, this = the snippet/section within it). Used by both
+// Administrator Security and Templates today.
+export function SubNavTabs({ tabs, ariaLabel }: { tabs: SubNavTab[]; ariaLabel: string }) {
   const pathname = usePathname();
 
   return (
-    <nav
-      aria-label="Administrator security sections"
-      className="mt-4 flex gap-1 border-b border-silver"
-    >
+    <nav aria-label={ariaLabel} className="mt-4 flex gap-1 border-b border-silver">
       {tabs.map((tab) => {
         const active = pathname === tab.href;
         return (

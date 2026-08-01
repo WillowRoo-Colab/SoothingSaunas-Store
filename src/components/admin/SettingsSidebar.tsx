@@ -9,6 +9,7 @@ const tabs = [
   { label: "Banners", href: "/store-settings/banners" },
   { label: "Text Values", href: "/store-settings/text-values" },
   { label: "Stylings", href: "/store-settings/stylings" },
+  { label: "Templates", href: "/store-settings/templates" },
   { label: "Administrator Security", href: "/store-settings/admin-security" },
 ] as const;
 
