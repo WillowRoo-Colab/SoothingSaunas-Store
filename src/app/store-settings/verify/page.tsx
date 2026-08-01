@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser, getAdminProfile } from "@/lib/supabase/auth";
 import { isTotpEnrolled } from "@/lib/auth/totp";
+import { SubmitButton } from "@/components/admin/SubmitButton";
 import {
   sendEnrollmentCode,
   sendLoginCode,
@@ -37,11 +38,13 @@ export default async function VerifyPage({
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
       <h1 className="font-display text-2xl text-charcoal">Verify it&apos;s you</h1>
       <p className="mt-1 text-sm text-charcoal/70">
-        {needsPhone
-          ? "Add a phone number to receive a one-time code by text."
-          : showTotpForm
-            ? "Enter the code from your authenticator app."
-            : "Enter the code we texted you to continue."}
+        {codeSent
+          ? "Enter the code we texted you to continue."
+          : needsPhone
+            ? "Add a phone number to receive a one-time code by text."
+            : showTotpForm
+              ? "Enter the code from your authenticator app."
+              : "We'll text a one-time code to your phone on file."}
       </p>
 
       {error ? (
@@ -72,12 +75,12 @@ export default async function VerifyPage({
               Include the country code, e.g. +1 for the US.
             </p>
           </div>
-          <button
-            type="submit"
-            className="mt-2 rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90"
+          <SubmitButton
+            pendingText="Sending…"
+            className="mt-2 rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90 disabled:opacity-60"
           >
             Send code
-          </button>
+          </SubmitButton>
         </form>
       ) : null}
 
@@ -99,33 +102,33 @@ export default async function VerifyPage({
                 className="rounded border border-silver px-3 py-2 text-center tracking-[0.3em]"
               />
             </div>
-            <button
-              type="submit"
-              className="mt-2 rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90"
+            <SubmitButton
+              pendingText="Verifying…"
+              className="mt-2 rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90 disabled:opacity-60"
             >
               Verify
-            </button>
+            </SubmitButton>
           </form>
 
           <form action={sendLoginCode} className="mt-3">
-            <button
-              type="submit"
-              className="text-sm text-charcoal/70 underline hover:text-charcoal"
+            <SubmitButton
+              pendingText="Sending…"
+              className="text-sm text-charcoal/70 underline hover:text-charcoal disabled:opacity-60"
             >
               Text me a code instead
-            </button>
+            </SubmitButton>
           </form>
         </>
       ) : null}
 
       {!needsPhone && !hasTotp && !codeSent ? (
         <form action={sendLoginCode} className="mt-6">
-          <button
-            type="submit"
-            className="rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90"
+          <SubmitButton
+            pendingText="Sending…"
+            className="rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90 disabled:opacity-60"
           >
             Text me a code
-          </button>
+          </SubmitButton>
         </form>
       ) : null}
 
@@ -148,22 +151,22 @@ export default async function VerifyPage({
                 className="rounded border border-silver px-3 py-2 text-center tracking-[0.3em]"
               />
             </div>
-            <button
-              type="submit"
-              className="mt-2 rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90"
+            <SubmitButton
+              pendingText="Verifying…"
+              className="mt-2 rounded bg-charcoal px-4 py-2 font-medium text-cream transition-colors hover:bg-charcoal/90 disabled:opacity-60"
             >
               Verify
-            </button>
+            </SubmitButton>
           </form>
 
           <form action={needsPhone ? sendEnrollmentCode : sendLoginCode} className="mt-3">
             {needsPhone ? <input type="hidden" name="phone" value={phone} /> : null}
-            <button
-              type="submit"
-              className="text-sm text-charcoal/70 underline hover:text-charcoal"
+            <SubmitButton
+              pendingText="Sending…"
+              className="text-sm text-charcoal/70 underline hover:text-charcoal disabled:opacity-60"
             >
               Resend code
-            </button>
+            </SubmitButton>
           </form>
 
           {hasTotp ? (

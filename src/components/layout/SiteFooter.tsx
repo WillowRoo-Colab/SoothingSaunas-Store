@@ -1,4 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
+
+// Every other footer link is still a decorative placeholder (see SSES-010 —
+// no dead links yet since the real pages don't exist). "Admin" is the one
+// real destination today.
+const LINK_HREFS: Partial<Record<string, string>> = {
+  Admin: "/store-settings",
+};
 
 const COLUMNS = [
   {
@@ -40,13 +48,25 @@ export function SiteFooter() {
                 {col.heading}
               </p>
               <ul className="mt-4 space-y-2 text-sm opacity-85">
-                {col.links.map((link) => (
-                  <li key={link}>
-                    <span className="cursor-default hover:text-gold">
-                      {link}
-                    </span>
-                  </li>
-                ))}
+                {col.links.map((link) => {
+                  const href = LINK_HREFS[link];
+                  return (
+                    <li key={link}>
+                      {href ? (
+                        <Link
+                          href={href}
+                          className="opacity-60 transition-opacity hover:text-gold hover:opacity-100"
+                        >
+                          {link}
+                        </Link>
+                      ) : (
+                        <span className="cursor-default hover:text-gold">
+                          {link}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
