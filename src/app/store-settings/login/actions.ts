@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { touchLastLogin } from "@/lib/supabase/auth";
 import {
   isLoginRateLimited,
   recordLoginAttempt,
@@ -22,7 +23,7 @@ export async function signIn(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   await recordLoginAttempt(email, ip, !error);
 
@@ -36,7 +37,12 @@ export async function signIn(formData: FormData) {
     );
   }
 
-  // The proxy (src/proxy.ts) will redirect on to /store-settings/verify if
-  // this account hasn't completed a fresh phone verification yet.
+  // Marks this as a fresh login — proxy.ts compares this against
+  // admin_mfa_verifications.verified_at, so 2FA is always required again
+  // after a new sign-in, not just once every so often.
+  await touchLastLogin(data.user.id);
+
+  // The proxy (src/proxy.ts) will redirect on to /store-settings/verify
+  // since this fresh login always needs 2FA again.
   redirect("/store-settings");
 }

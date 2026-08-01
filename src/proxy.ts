@@ -2,7 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { MFA_REVERIFY_AFTER_MS, IDLE_TIMEOUT_MS } from "@/lib/auth/policy";
+import { isMfaFresh } from "@/lib/supabase/auth";
+import { IDLE_TIMEOUT_MS } from "@/lib/auth/policy";
 
 // Previously this only checked "is there any authenticated Supabase
 // session" — a holdover from the single-hardcoded-admin-account model. Now
@@ -61,9 +62,9 @@ export async function proxy(request: NextRequest) {
 
   const { data: profile } = await admin
     .from("admin_profiles")
-    .select("status")
+    .select("status, last_login_at")
     .eq("user_id", user.id)
-    .maybeSingle<{ status: string }>();
+    .maybeSingle<{ status: string; last_login_at: string | null }>();
 
   if (!profile || profile.status !== "active") {
     const url = new URL("/store-settings/login", request.url);
@@ -80,11 +81,7 @@ export async function proxy(request: NextRequest) {
     .eq("user_id", user.id)
     .maybeSingle<{ verified_at: string }>();
 
-  const mfaFresh =
-    !!mfaRow &&
-    Date.now() - new Date(mfaRow.verified_at).getTime() < MFA_REVERIFY_AFTER_MS;
-
-  if (!mfaFresh) {
+  if (!isMfaFresh(mfaRow?.verified_at ?? null, profile.last_login_at)) {
     return NextResponse.redirect(new URL("/store-settings/verify", request.url));
   }
 

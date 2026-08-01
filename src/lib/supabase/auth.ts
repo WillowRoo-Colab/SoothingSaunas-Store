@@ -1,7 +1,6 @@
 import "server-only";
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
-import { MFA_REVERIFY_AFTER_MS } from "@/lib/auth/policy";
 
 export type AdminRole = "owner" | "editor";
 export type AdminStatus = "invited" | "active" | "suspended";
@@ -14,6 +13,7 @@ export interface AdminProfile {
   phoneE164: string | null;
   mfaEnrolled: boolean;
   status: AdminStatus;
+  lastLoginAt: string | null;
 }
 
 interface AdminProfileRow {
@@ -24,7 +24,11 @@ interface AdminProfileRow {
   phone_e164: string | null;
   mfa_enrolled: boolean;
   status: AdminStatus;
+  last_login_at: string | null;
 }
+
+const PROFILE_COLUMNS =
+  "user_id, email, display_name, role, phone_e164, mfa_enrolled, status, last_login_at";
 
 function toAdminProfile(row: AdminProfileRow): AdminProfile {
   return {
@@ -35,6 +39,7 @@ function toAdminProfile(row: AdminProfileRow): AdminProfile {
     phoneE164: row.phone_e164,
     mfaEnrolled: row.mfa_enrolled,
     status: row.status,
+    lastLoginAt: row.last_login_at,
   };
 }
 
@@ -59,7 +64,7 @@ export async function requireAdminSession(): Promise<{
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("admin_profiles")
-    .select("user_id, email, display_name, role, phone_e164, mfa_enrolled, status")
+    .select(PROFILE_COLUMNS)
     .eq("user_id", user.id)
     .maybeSingle<AdminProfileRow>();
 
@@ -89,7 +94,7 @@ export async function getAdminProfile(userId: string): Promise<AdminProfile | nu
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("admin_profiles")
-    .select("user_id, email, display_name, role, phone_e164, mfa_enrolled, status")
+    .select(PROFILE_COLUMNS)
     .eq("user_id", userId)
     .maybeSingle<AdminProfileRow>();
 
@@ -112,7 +117,7 @@ export async function ensureAdminProfile(
   const { data, error } = await admin
     .from("admin_profiles")
     .insert({ user_id: userId, email, role: "editor", status: "invited" })
-    .select("user_id, email, display_name, role, phone_e164, mfa_enrolled, status")
+    .select(PROFILE_COLUMNS)
     .single<AdminProfileRow>();
 
   if (error) throw error;
@@ -137,7 +142,7 @@ export async function listAdminProfiles(): Promise<AdminProfile[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("admin_profiles")
-    .select("user_id, email, display_name, role, phone_e164, mfa_enrolled, status")
+    .select(PROFILE_COLUMNS)
     .order("email")
     .returns<AdminProfileRow[]>();
 
@@ -145,19 +150,28 @@ export async function listAdminProfiles(): Promise<AdminProfile[]> {
   return (data ?? []).map(toAdminProfile);
 }
 
-// Distinct from requireAdminSession: this checks phone-verification
-// freshness, not account status. Enforced primarily at the route level
-// (src/proxy.ts) rather than inside every data-access function.
-export async function isMfaFresh(userId: string): Promise<boolean> {
+// MFA freshness is tied to *this specific login*, not a rolling time window:
+// fresh only if the last successful 2FA check happened at or after the most
+// recent sign-in. A brand new session (password login, invite acceptance,
+// password reset) always requires 2FA again, however recently it was last
+// done — staying continuously signed in does not re-prompt repeatedly.
+// Pure/sync so callers (src/proxy.ts) that already fetched both timestamps
+// don't need a second round trip.
+export function isMfaFresh(verifiedAt: string | null, lastLoginAt: string | null): boolean {
+  if (!verifiedAt || !lastLoginAt) return false;
+  return new Date(verifiedAt).getTime() >= new Date(lastLoginAt).getTime();
+}
+
+// Stamps "a new session started now" — called from every place a session is
+// (re)established: password sign-in, invite acceptance, password reset.
+// Whatever admin_mfa_verifications.verified_at held before this becomes
+// stale relative to the new value, forcing 2FA again via isMfaFresh above.
+export async function touchLastLogin(userId: string): Promise<void> {
   const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("admin_mfa_verifications")
-    .select("verified_at")
-    .eq("user_id", userId)
-    .maybeSingle<{ verified_at: string }>();
+  const { error } = await admin
+    .from("admin_profiles")
+    .update({ last_login_at: new Date().toISOString() })
+    .eq("user_id", userId);
 
   if (error) throw error;
-  if (!data) return false;
-
-  return Date.now() - new Date(data.verified_at).getTime() < MFA_REVERIFY_AFTER_MS;
 }

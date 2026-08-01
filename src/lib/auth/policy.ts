@@ -2,13 +2,16 @@
 // so the numbers are easy to find and adjust without hunting through the
 // auth code paths that use them.
 
-// How long a phone-verification (2FA) stays "fresh" before an admin is sent
-// back through the OTP step, independent of their base Supabase session.
-export const MFA_REVERIFY_AFTER_MS = 12 * 60 * 60 * 1000; // 12 hours
+// MFA freshness is NOT a rolling time window — it's tied to each fresh
+// login (admin_profiles.last_login_at vs admin_mfa_verifications.verified_at
+// in src/lib/supabase/auth.ts's isMfaFresh). A brand new sign-in always
+// requires 2FA again; staying continuously signed in does not re-prompt.
 
 // App-level idle timeout, stamped by src/proxy.ts on every matched request.
-// Independent of (and shorter than) Supabase's own JWT/refresh expiry.
-export const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+// Independent of (and shorter than) Supabase's own JWT/refresh expiry. Kept
+// short since the admin area may eventually hold sensitive customer/business
+// data.
+export const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
 
 // Login rate limiting: failures counted per identifier (email or IP) within
 // this rolling window before a login attempt is short-circuited.

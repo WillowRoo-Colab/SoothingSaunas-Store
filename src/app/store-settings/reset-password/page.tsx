@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSessionUser } from "@/lib/supabase/auth";
+import { getSessionUser, touchLastLogin } from "@/lib/supabase/auth";
 import { requestPasswordReset, setNewPassword } from "./actions";
 
 export default async function ResetPasswordPage({
@@ -34,6 +34,10 @@ export default async function ResetPasswordPage({
   const user = await getSessionUser();
 
   if (user) {
+    // Marks the start of this session — a password reset must not let 2FA
+    // be skipped as "recently verified" from before the reset.
+    await touchLastLogin(user.id);
+
     return (
       <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
         <h1 className="font-display text-2xl text-charcoal">Set a new password</h1>

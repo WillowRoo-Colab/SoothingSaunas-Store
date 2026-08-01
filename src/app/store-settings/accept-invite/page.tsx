@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSessionUser, ensureAdminProfile } from "@/lib/supabase/auth";
+import { getSessionUser, ensureAdminProfile, touchLastLogin } from "@/lib/supabase/auth";
 import { setInvitePassword } from "./actions";
 
 export default async function AcceptInvitePage({
@@ -45,6 +45,9 @@ export default async function AcceptInvitePage({
   }
 
   await ensureAdminProfile(user.id, user.email ?? "");
+  // Marks the start of this session so the mandatory phone enrollment right
+  // after this counts as satisfying a fresh login (see touchLastLogin).
+  await touchLastLogin(user.id);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
