@@ -15,7 +15,7 @@ const COLUMNS = [
   },
   {
     heading: "Company",
-    links: ["About Us", "Privacy", "Terms", "Accessibility", "Sitemap"],
+    links: ["About Us", "Privacy", "Terms", "Accessibility", "Sitemap", "Admin"],
   },
 ] as const;
 
@@ -68,7 +68,7 @@ export function SiteFooter() {
           <p>&copy; {year} Soothing Saunas. All rights reserved.</p>
         </div>
 
-        <p className="mt-6 font-heading text-sm italic opacity-70">
+        <p className="mt-6 font-heading text-sm italic opacity-90">
           Restoration is personal. Your space should be too.
         </p>
       </div>
