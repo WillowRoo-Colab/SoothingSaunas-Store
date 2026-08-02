@@ -32,7 +32,20 @@ export const TEMPLATE_CATEGORIES: Record<
 > = {
   collections: {
     label: "Collections",
-    templates: [],
+    templates: [
+      {
+        id: "default-collection",
+        label: "Default Collection Template",
+        description:
+          "Used for every collection today — sort, grid/list view toggle, and the product grid.",
+        previewPath: "/collections/traditional-saunas",
+        variableSegment: {
+          label: "Preview a different collection (handle)",
+          placeholder: "traditional-saunas",
+          basePath: "/collections/",
+        },
+      },
+    ],
   },
   products: {
     label: "Products",
@@ -42,10 +55,10 @@ export const TEMPLATE_CATEGORIES: Record<
         label: "Default Product Template",
         description:
           "Used for every product today — image gallery with zoom, and the info panel (price, description, metafields, buy button).",
-        previewPath: "/products/the-palmer-sauna",
+        previewPath: "/products/elation-sauna",
         variableSegment: {
           label: "Preview a different product (handle)",
-          placeholder: "the-palmer-sauna",
+          placeholder: "elation-sauna",
           basePath: "/products/",
         },
       },
