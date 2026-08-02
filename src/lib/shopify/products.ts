@@ -5,6 +5,8 @@ import {
   type ProductByHandleQueryData,
   PRODUCT_DETAIL_BY_HANDLE_QUERY,
   type ProductDetailQueryData,
+  ALL_PRODUCTS_QUERY,
+  type AllProductsQueryData,
 } from "./queries/products";
 
 export interface StorefrontProduct {
@@ -44,6 +46,23 @@ export async function getProductsByHandles(
 ): Promise<StorefrontProduct[]> {
   const results = await Promise.all(handles.map(getProductByHandle));
   return results.filter((p): p is StorefrontProduct => p !== null);
+}
+
+export interface ProductOption {
+  handle: string;
+  title: string;
+}
+
+// Admin-only product picker source — every active product's handle/title,
+// used to populate a dropdown so a saved handle is always a real, live
+// product rather than a hand-typed string.
+export async function listAllProducts(): Promise<ProductOption[]> {
+  const data = await shopifyFetch<AllProductsQueryData>({
+    query: ALL_PRODUCTS_QUERY,
+    next: { revalidate: 300 },
+  });
+
+  return data.products.nodes;
 }
 
 export interface ProductDetailMedia {

@@ -38,6 +38,26 @@ export interface ProductByHandleQueryData {
   } | null;
 }
 
+// Powers the admin "pick a product to feature" dropdown (Promotions
+// settings) — 28 active products at last count, well within a single page,
+// so no pagination/search is needed yet.
+export const ALL_PRODUCTS_QUERY = `#graphql
+  query AllProducts {
+    products(first: 250, sortKey: TITLE) {
+      nodes {
+        handle
+        title
+      }
+    }
+  }
+`;
+
+export interface AllProductsQueryData {
+  products: {
+    nodes: Array<{ handle: string; title: string }>;
+  };
+}
+
 // Sauna product template (SSES-006: presentation only — commerce data is
 // read live, nothing here duplicates Shopify's pricing/inventory/cart).
 export const PRODUCT_DETAIL_BY_HANDLE_QUERY = `#graphql

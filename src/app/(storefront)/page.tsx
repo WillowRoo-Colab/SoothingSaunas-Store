@@ -1,5 +1,6 @@
 import { getCollectionLeadImage } from "@/lib/shopify/collections";
 import { getActiveImage } from "@/lib/images";
+import { getFeaturedProductHandle, HOMEPAGE_FEATURED_SLOT } from "@/lib/featuredProducts";
 import {
   getProductByHandle,
   getProductsByHandles,
@@ -24,6 +25,8 @@ import { WellnessWalletCapture } from "@/components/homepage/WellnessWalletCaptu
 // Wellness pathway categories currently have zero products in the catalog,
 // so real categories with inventory were substituted).
 export default async function Home() {
+  const featuredHandle = await getFeaturedProductHandle(HOMEPAGE_FEATURED_SLOT);
+
   const [
     heroImage,
     featuredProduct,
@@ -34,7 +37,7 @@ export default async function Home() {
     accessoryImage,
   ] = await Promise.all([
     getActiveImage("homepage-hero"),
-    getProductByHandle("the-palmer-sauna"),
+    featuredHandle ? getProductByHandle(featuredHandle) : Promise.resolve(null),
     getProductsByHandles([
       "starter-sauna-accessory-package",
       "sauna-comfort-back-rest",
