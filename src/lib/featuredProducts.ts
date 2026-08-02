@@ -8,17 +8,26 @@ interface FeaturedProductRow {
   product_handle: string;
 }
 
-// Public read — no admin session required. Used by guest-facing pages.
+// Public read — no admin session required. Used by guest-facing pages. A
+// decorative homepage section is never worth failing the page's build/
+// render over, so this fails soft (log + hide the section) rather than
+// throwing — unlike setFeaturedProduct below, which should keep surfacing
+// errors loudly since it's an explicit admin write.
 export async function getFeaturedProductHandle(slot: string): Promise<string | null> {
-  const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("featured_products")
-    .select("product_handle")
-    .eq("slot", slot)
-    .maybeSingle<FeaturedProductRow>();
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from("featured_products")
+      .select("product_handle")
+      .eq("slot", slot)
+      .maybeSingle<FeaturedProductRow>();
 
-  if (error) throw error;
-  return data?.product_handle ?? null;
+    if (error) throw error;
+    return data?.product_handle ?? null;
+  } catch (error) {
+    console.error(`getFeaturedProductHandle("${slot}") failed:`, error);
+    return null;
+  }
 }
 
 export async function setFeaturedProduct(slot: string, productHandle: string): Promise<void> {

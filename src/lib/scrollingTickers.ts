@@ -68,25 +68,32 @@ function toTicker(row: ScrollingTickerRow): ScrollingTicker {
   };
 }
 
-// Public read — no admin session required. Used by guest-facing pages.
-// Picks the most recently updated enabled ticker for the placement, so an
-// admin can always have at most one "live" instance per slot without the
-// storefront needing to pick among several.
+// Public read — no admin session required. Used by guest-facing pages,
+// including the shared storefront layout (so it runs on every page, even
+// otherwise-fully-static ones like /about). A decorative banner is never
+// worth failing an unrelated page's build/render over, so this fails soft
+// (log + hide the ticker) rather than throwing — unlike the admin-only
+// reads/writes below, which should keep surfacing errors loudly.
 export async function getTickerByPlacement(
   placementKey: string
 ): Promise<ScrollingTicker | null> {
-  const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("scrolling_tickers")
-    .select(COLUMNS)
-    .eq("placement_key", placementKey)
-    .eq("enabled", true)
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle<ScrollingTickerRow>();
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from("scrolling_tickers")
+      .select(COLUMNS)
+      .eq("placement_key", placementKey)
+      .eq("enabled", true)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle<ScrollingTickerRow>();
 
-  if (error) throw error;
-  return data ? toTicker(data) : null;
+    if (error) throw error;
+    return data ? toTicker(data) : null;
+  } catch (error) {
+    console.error(`getTickerByPlacement("${placementKey}") failed:`, error);
+    return null;
+  }
 }
 
 // Admin-only — every instance, for the "Scrolling Banners" list screen.
