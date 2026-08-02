@@ -7,6 +7,8 @@ import {
   type ProductDetailQueryData,
   ALL_PRODUCTS_QUERY,
   type AllProductsQueryData,
+  PRODUCT_ADDONS_QUERY,
+  type ProductAddonsQueryData,
 } from "./queries/products";
 
 export interface StorefrontProduct {
@@ -150,4 +152,52 @@ export async function getProductDetailByHandle(
     specSheetUrl: specSheet?.reference?.url ?? null,
     heaterOptions,
   };
+}
+
+export interface ProductAddon {
+  id: string;
+  label: string;
+  variantId: string;
+  basePrice: string;
+  currencyCode: string;
+  /** Percentage 0-100, from the `discount` metaobject field. */
+  discountPercent: number;
+  finalPrice: number;
+}
+
+// "Enhance Your Experience" add-ons (Enhanced Product Template) — each
+// `addon_items` metaobject entry references a specific variant to add, plus
+// a display label and an optional discount percentage.
+export async function getProductAddons(handle: string): Promise<ProductAddon[]> {
+  const data = await shopifyFetch<ProductAddonsQueryData>({
+    query: PRODUCT_ADDONS_QUERY,
+    variables: { handle },
+    next: { revalidate: 3600 },
+  });
+
+  const nodes = data.product?.metafield?.references.nodes ?? [];
+
+  return nodes
+    .map((node) => {
+      const fields = node.fields;
+      const label = fields.find((f) => f.key === "label")?.value ?? null;
+      const discountPercent = Number(fields.find((f) => f.key === "discount")?.value ?? 0);
+      const variant = fields.find((f) => f.key === "variant")?.reference ?? null;
+
+      if (!label || !variant) return null;
+
+      const basePrice = Number(variant.price.amount);
+      const finalPrice = basePrice - (basePrice * discountPercent) / 100;
+
+      return {
+        id: node.id,
+        label,
+        variantId: variant.id,
+        basePrice: variant.price.amount,
+        currencyCode: variant.price.currencyCode,
+        discountPercent,
+        finalPrice,
+      };
+    })
+    .filter((addon): addon is ProductAddon => addon !== null);
 }

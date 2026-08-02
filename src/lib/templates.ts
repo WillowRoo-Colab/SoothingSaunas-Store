@@ -62,6 +62,18 @@ export const TEMPLATE_CATEGORIES: Record<
           basePath: "/products/",
         },
       },
+      {
+        id: "enhanced-product",
+        label: "Enhanced Product Template",
+        description:
+          "Same gallery with zoom, but the scrolling banner sits at the top of the info column and an \"Enhance Your Experience\" add-ons section (with a live-updating total) appears below the description.",
+        previewPath: "/products/template-b/georgian-cabin-sauna",
+        variableSegment: {
+          label: "Preview a different product (handle)",
+          placeholder: "georgian-cabin-sauna",
+          basePath: "/products/template-b/",
+        },
+      },
     ],
   },
   "promos-ads": {

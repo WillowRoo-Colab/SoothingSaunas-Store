@@ -122,6 +122,58 @@ export const PRODUCT_DETAIL_BY_HANDLE_QUERY = `#graphql
   }
 `;
 
+// Powers the "Enhance Your Experience" add-ons section (Enhanced Product
+// Template only) — reads the same `custom.addon_items` metaobject list the
+// legacy theme used, each entry referencing a specific variant to add.
+export const PRODUCT_ADDONS_QUERY = `#graphql
+  query ProductAddons($handle: String!) {
+    product(handle: $handle) {
+      metafield(namespace: "custom", key: "addon_items") {
+        references(first: 20) {
+          nodes {
+            ... on Metaobject {
+              id
+              fields {
+                key
+                value
+                reference {
+                  ... on ProductVariant {
+                    id
+                    price {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export interface ProductAddonsQueryData {
+  product: {
+    metafield: {
+      references: {
+        nodes: Array<{
+          id: string;
+          fields: Array<{
+            key: string;
+            value: string | null;
+            reference: {
+              id: string;
+              price: { amount: string; currencyCode: string };
+            } | null;
+          }>;
+        }>;
+      };
+    } | null;
+  } | null;
+}
+
 export interface ProductDetailQueryData {
   product: {
     id: string;

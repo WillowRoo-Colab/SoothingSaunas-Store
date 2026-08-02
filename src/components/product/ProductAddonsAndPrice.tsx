@@ -1,0 +1,137 @@
+"use client";
+
+import { useState } from "react";
+import type { ProductAddon } from "@/lib/shopify/products";
+import { devContent, resolveContent } from "@/lib/dev-content";
+
+function formatMoney(amount: number, currencyCode: string) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currencyCode,
+  }).format(amount);
+}
+
+// Fixed checkbox affordance shared by every add-on row (not the per-item
+// Shopify metaobject `icon` field, which the legacy theme's own render path
+// never actually used) — white outline unchecked, gold-to-flame fill once
+// checked.
+function FlameCheckbox({ checked }: { checked: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="h-[22px] w-[22px] shrink-0 transition-colors"
+      style={{
+        fill: checked ? "#F3500A" : "#ffffff",
+        stroke: "#c9a86a",
+        strokeWidth: 1.5,
+      }}
+    >
+      <path d="M12 2C10 5 7 7 7 11C7 14.3 9.7 17 13 17C16.3 17 19 14.3 19 11C19 7 16 5 14 2C13 3.5 13 4 12 5C12 4.5 12 3.5 12 2Z" />
+    </svg>
+  );
+}
+
+export function ProductAddonsAndPrice({
+  basePrice,
+  compareAtPrice,
+  currencyCode,
+  addons,
+}: {
+  basePrice: string;
+  compareAtPrice: string | null;
+  currencyCode: string;
+  addons: ProductAddon[];
+}) {
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+
+  function toggle(id: string) {
+    setChecked((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  const addonsTotal = addons
+    .filter((addon) => checked.has(addon.id))
+    .reduce((sum, addon) => sum + addon.finalPrice, 0);
+  const total = Number(basePrice) + addonsTotal;
+
+  return (
+    <>
+      {addons.length > 0 ? (
+        <div className="mt-2">
+          <h2 className="font-display text-lg italic text-gold underline decoration-gold/40 underline-offset-4">
+            Enhance Your Experience
+          </h2>
+
+          <div className="mt-3 flex flex-col gap-3">
+            {addons.map((addon) => {
+              const isChecked = checked.has(addon.id);
+              const discounted = addon.discountPercent > 0;
+
+              return (
+                <label
+                  key={addon.id}
+                  className="flex cursor-pointer items-center justify-between gap-3"
+                >
+                  <span className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => toggle(addon.id)}
+                      className="sr-only"
+                    />
+                    <FlameCheckbox checked={isChecked} />
+                    <span className="text-sm text-cream/90">{addon.label}</span>
+                  </span>
+
+                  <span className="text-sm font-medium text-cream whitespace-nowrap">
+                    {discounted ? (
+                      <>
+                        <span className="mr-1.5 text-cream/50 line-through">
+                          {formatMoney(Number(addon.basePrice), addon.currencyCode)}
+                        </span>
+                        {formatMoney(addon.finalPrice, addon.currencyCode)}
+                      </>
+                    ) : (
+                      formatMoney(addon.finalPrice, addon.currencyCode)
+                    )}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="my-5 h-px w-full bg-gold/30" aria-hidden />
+
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="font-display text-xl font-semibold text-cream sm:text-2xl">
+            {formatMoney(total, currencyCode)}
+          </p>
+          {compareAtPrice !== null && Number(compareAtPrice) > Number(basePrice) ? (
+            <p className="text-sm text-cream/50 line-through">
+              {formatMoney(Number(compareAtPrice), currencyCode)}
+            </p>
+          ) : null}
+        </div>
+
+        <button
+          type="button"
+          disabled
+          aria-disabled="true"
+          aria-label={resolveContent(devContent.addToOrderPending)}
+          title={resolveContent(devContent.addToOrderPending)}
+          className="inline-flex min-h-12 cursor-not-allowed items-center justify-center rounded-full border-2 border-gold/50 px-8 text-sm font-bold tracking-wide text-gold/50"
+        >
+          Add to Order
+        </button>
+      </div>
+    </>
+  );
+}
