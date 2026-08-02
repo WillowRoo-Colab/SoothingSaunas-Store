@@ -60,11 +60,26 @@ export async function proxy(request: NextRequest) {
 
   const admin = createAdminClient();
 
-  const { data: profile } = await admin
+  const { data: profile, error: profileError } = await admin
     .from("admin_profiles")
     .select("status, last_login_at")
     .eq("user_id", user.id)
     .maybeSingle<{ status: string; last_login_at: string | null }>();
+
+  // A failed lookup (transient DB/network error) is not the same thing as
+  // "no admin_profiles row exists" — conflating the two previously bounced
+  // admins through a misleading "account isn't active" message and a full
+  // re-login+2FA cycle on every transient blip, which looked like an
+  // infinite login loop when the underlying error kept recurring.
+  if (profileError) {
+    console.error("proxy: admin_profiles lookup failed:", profileError);
+    const url = new URL("/store-settings/login", request.url);
+    url.searchParams.set(
+      "error",
+      "We couldn't verify your account just now. Please wait a moment and try signing in again."
+    );
+    return NextResponse.redirect(url);
+  }
 
   if (!profile || profile.status !== "active") {
     const url = new URL("/store-settings/login", request.url);
@@ -75,11 +90,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const { data: mfaRow } = await admin
+  const { data: mfaRow, error: mfaError } = await admin
     .from("admin_mfa_verifications")
     .select("verified_at")
     .eq("user_id", user.id)
     .maybeSingle<{ verified_at: string }>();
+
+  if (mfaError) {
+    console.error("proxy: admin_mfa_verifications lookup failed:", mfaError);
+    const url = new URL("/store-settings/login", request.url);
+    url.searchParams.set(
+      "error",
+      "We couldn't verify your account just now. Please wait a moment and try signing in again."
+    );
+    return NextResponse.redirect(url);
+  }
 
   if (!isMfaFresh(mfaRow?.verified_at ?? null, profile.last_login_at)) {
     return NextResponse.redirect(new URL("/store-settings/verify", request.url));
