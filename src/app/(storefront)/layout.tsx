@@ -1,11 +1,14 @@
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { getTickerByPlacement } from "@/lib/scrollingTickers";
 
-export default function StorefrontLayout({
+export default async function StorefrontLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const homepageTicker = await getTickerByPlacement("homepage-top");
+
   return (
     <>
       <a
@@ -14,7 +17,7 @@ export default function StorefrontLayout({
       >
         Skip to main content
       </a>
-      <SiteHeader />
+      <SiteHeader ticker={homepageTicker} />
       <div className="flex flex-1 flex-col">{children}</div>
       <SiteFooter />
     </>

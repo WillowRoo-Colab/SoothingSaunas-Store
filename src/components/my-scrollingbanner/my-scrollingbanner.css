@@ -1,0 +1,27 @@
+.wrm-scrollingbanner {
+  overflow: hidden;
+  white-space: nowrap;
+  background: #111;
+  color: #c9a86a;
+  padding: 0.75rem 0;
+}
+
+.wrm-scrollingbanner__inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  animation: wrm-scroll 18s linear infinite;
+}
+
+.wrm-scrollingbanner__item {
+  font-family: 'Playfair Display', serif;
+}
+
+.wrm-scrollingbanner__divider {
+  color: #c9a86a;
+}
+
+@keyframes wrm-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}

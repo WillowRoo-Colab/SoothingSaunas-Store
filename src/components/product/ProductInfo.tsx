@@ -1,4 +1,6 @@
 import type { ProductDetail } from "@/lib/shopify/products";
+import type { ScrollingTicker as ScrollingTickerData } from "@/lib/scrollingTickers";
+import { ScrollingTicker } from "@/components/site/ScrollingTicker";
 import { devContent, resolveContent } from "@/lib/dev-content";
 
 function formatMoney(amount: string, currencyCode: string) {
@@ -12,7 +14,13 @@ function Separator() {
   return <div aria-hidden className="my-5 h-px w-full bg-gold/30" />;
 }
 
-export function ProductInfo({ product }: { product: ProductDetail }) {
+export function ProductInfo({
+  product,
+  ticker,
+}: {
+  product: ProductDetail;
+  ticker: ScrollingTickerData | null;
+}) {
   const hasCompareAt =
     product.compareAtPrice !== null &&
     Number(product.compareAtPrice) > Number(product.price);
@@ -37,6 +45,12 @@ export function ProductInfo({ product }: { product: ProductDetail }) {
       ) : null}
 
       <Separator />
+
+      {ticker ? (
+        <div className="mb-5">
+          <ScrollingTicker ticker={ticker} />
+        </div>
+      ) : null}
 
       {product.descriptionHtml ? (
         <div

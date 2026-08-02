@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ScrollingTicker as ScrollingTickerData } from "@/lib/scrollingTickers";
+import { ScrollingTicker } from "@/components/site/ScrollingTicker";
 
 const ANNOUNCEMENTS = [
   "Questions before you choose? Call (504) 285-9552.",
@@ -62,7 +64,7 @@ function UtilityAnnouncement() {
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({ ticker }: { ticker: ScrollingTickerData | null }) {
   const pathname = usePathname();
   // The shrink/fade-in transition is a homepage-only effect (the header
   // starts transparent over the cinematic hero); every other page renders
@@ -124,6 +126,11 @@ export function SiteHeader() {
   return (
     <>
       <div className="fixed inset-x-0 top-0 z-50">
+        {animated && ticker ? (
+          <div className="bg-charcoal py-1.5">
+            <ScrollingTicker ticker={ticker} />
+          </div>
+        ) : null}
         <UtilityAnnouncement />
         <header
           className={`relative mx-auto max-w-[1440px] overflow-visible transition-colors duration-300 ${

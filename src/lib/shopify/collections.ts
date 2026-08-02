@@ -3,7 +3,10 @@ import { shopifyFetch } from "./client";
 import {
   COLLECTIONS_QUERY,
   type CollectionsQueryData,
+  COLLECTION_PRODUCTS_QUERY,
+  type CollectionProductsQueryData,
 } from "./queries/collections";
+import type { StorefrontProduct } from "./products";
 
 export interface Collection {
   id: string;
@@ -71,4 +74,57 @@ export async function getCollectionLeadImage(
 
   const image = data.collectionByHandle?.products.edges[0]?.node.featuredImage;
   return image ? { url: image.url, alt: image.altText } : null;
+}
+
+export type CollectionProductsSortKey =
+  | "COLLECTION_DEFAULT"
+  | "PRICE"
+  | "BEST_SELLING"
+  | "CREATED"
+  | "TITLE";
+
+export interface CollectionProductsResult {
+  title: string;
+  products: StorefrontProduct[];
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+}
+
+// No `filters` argument yet — product filtering is on hold until the
+// underlying Shopify metafields are in place (see project plan notes).
+export async function getCollectionProducts(
+  handle: string,
+  {
+    first = 24,
+    after,
+    sortKey = "COLLECTION_DEFAULT",
+    reverse = false,
+  }: {
+    first?: number;
+    after?: string;
+    sortKey?: CollectionProductsSortKey;
+    reverse?: boolean;
+  } = {}
+): Promise<CollectionProductsResult | null> {
+  const data = await shopifyFetch<CollectionProductsQueryData>({
+    query: COLLECTION_PRODUCTS_QUERY,
+    variables: { handle, first, after, sortKey, reverse },
+    next: { revalidate: 3600 },
+  });
+
+  const collection = data.collectionByHandle;
+  if (!collection) return null;
+
+  return {
+    title: collection.title,
+    products: collection.products.nodes.map((node) => ({
+      id: node.id,
+      title: node.title,
+      handle: node.handle,
+      imageUrl: node.featuredImage?.url ?? null,
+      imageAlt: node.featuredImage?.altText ?? null,
+      price: node.priceRange.minVariantPrice.amount,
+      currencyCode: node.priceRange.minVariantPrice.currencyCode,
+    })),
+    pageInfo: collection.products.pageInfo,
+  };
 }

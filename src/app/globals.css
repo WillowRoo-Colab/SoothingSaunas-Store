@@ -34,3 +34,26 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+/* ScrollingTicker (src/components/site/ScrollingTicker.tsx) — continuous
+   marquee. Duration is per-instance via the --ticker-duration custom
+   property; reduced-motion users get a static, non-scrolling row instead
+   of forcing the animation off mid-cascade with an inline style. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll var(--ticker-duration, 20s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
