@@ -26,7 +26,7 @@ export default async function EnhancedProductPage({
 
   return (
     <main id="main-content" className="bg-charcoal py-12 sm:py-16">
-      <div className="mx-auto grid w-full max-w-[1600px] gap-10 px-4 sm:px-8 lg:grid-cols-[65fr_35fr] lg:gap-8">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-4 sm:px-8 lg:grid-cols-[65fr_35fr] lg:gap-8">
         <ProductGallery media={product.media} productTitle={product.title} />
         <EnhancedProductInfo product={product} addons={addons} ticker={ticker} />
       </div>

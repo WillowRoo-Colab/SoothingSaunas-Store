@@ -37,7 +37,7 @@ export default async function CollectionPage({
 
   return (
     <main id="main-content" className="bg-charcoal py-12 sm:py-16">
-      <div className="mx-auto max-w-[1600px] px-4 sm:px-8">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-8">
         <h1 className="font-display text-3xl text-cream sm:text-4xl">{result.title}</h1>
 
         <div className="mt-6 flex items-center justify-between border-b border-gold/20 pb-4">

@@ -125,6 +125,11 @@ export function SiteHeader({ ticker }: { ticker: ScrollingTickerData | null }) {
 
   return (
     <>
+      {/* No explicit background here: the site-wide default (globals.css)
+          is now charcoal, so the transparent overflow beyond the centered
+          1440px column already reads as dark rather than needing its own
+          patch — the only genuinely transparent phase is the homepage's
+          pre-scroll header, where the hero sits behind it anyway. */}
       <div className="fixed inset-x-0 top-0 z-50">
         {animated && ticker ? (
           <div className="bg-charcoal py-1.5">
@@ -147,7 +152,12 @@ export function SiteHeader({ ticker }: { ticker: ScrollingTickerData | null }) {
             <div aria-hidden className="invisible w-[97px] shrink-0" />
 
             <nav aria-label="Primary" className="hidden lg:block">
-              <ul className="flex items-center gap-7 text-sm font-medium text-[#f7f1e5]">
+              <ul
+                className={`flex items-center gap-7 text-sm transition-colors duration-300 ${
+                  scrolled ? "font-bold text-gold" : "font-medium text-[#f7f1e5]"
+                }`}
+              >
+
                 {PRIMARY_NAV.map((item) => (
                   <li
                     key={item.label}
@@ -179,7 +189,7 @@ export function SiteHeader({ ticker }: { ticker: ScrollingTickerData | null }) {
               </ul>
             </nav>
 
-            <div className="hidden items-center gap-5 text-xs font-medium text-[#f7f1e5] lg:flex">
+            <div className="hidden items-center gap-5 text-xs font-bold text-[#f7f1e5] lg:flex">
               <span className="cursor-default opacity-70">Search</span>
               <span className="cursor-default opacity-70">Account</span>
               <span className="cursor-default opacity-70">Cart</span>

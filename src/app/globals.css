@@ -25,8 +25,12 @@
 }
 
 :root {
-  --background: var(--color-cream);
-  --foreground: var(--color-charcoal);
+  /* Dark is the site-wide default so nothing but deliberate, explicitly-
+     styled cream elements (cards, buttons, admin UI) ever shows light —
+     any gap between components (fixed header overflow, overscroll bounce,
+     resize/repaint) now reads as charcoal instead of a jarring cream flash. */
+  --background: var(--color-charcoal);
+  --foreground: var(--color-cream);
 }
 
 body {
