@@ -217,7 +217,7 @@ export function SiteHeader({ ticker }: { ticker: ScrollingTickerData | null }) {
 
           <div
             ref={logoRef}
-            className="pointer-events-none absolute left-[36px] sm:left-[52px]"
+            className="pointer-events-none absolute left-1/2 flex -translate-x-1/2 flex-col items-center sm:left-[52px] sm:translate-x-0"
             style={{ top: LOGO_TOP, height: animated ? LOGO_MAX : LOGO_MIN }}
           >
             <Link
@@ -234,6 +234,14 @@ export function SiteHeader({ ticker }: { ticker: ScrollingTickerData | null }) {
                 className="h-full w-auto"
               />
             </Link>
+            {/* Pre-scroll homepage only — matches the tall, unsettled header
+                phase; disappears once the header settles into its compact
+                state on scroll or on every other page. */}
+            {animated && !scrolled ? (
+              <p className="mt-2 whitespace-nowrap text-center text-xs font-bold uppercase tracking-[0.15em] text-gold">
+                Create your place to reset
+              </p>
+            ) : null}
           </div>
 
           {mobileOpen ? (

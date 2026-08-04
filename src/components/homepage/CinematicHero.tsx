@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Eyebrow, SsButton } from "./primitives";
+import { SsButton } from "./primitives";
 
 export function CinematicHero({
   imageUrl,
@@ -37,8 +37,7 @@ export function CinematicHero({
 
       <div className="relative w-full px-4 pb-16 pt-32 sm:px-8 sm:pb-20">
         <div className="max-w-[620px] text-[#f7f1e5]">
-          <Eyebrow>Create your place to reset</Eyebrow>
-          <h1 className="mt-4 font-display text-[clamp(3rem,2rem+4.2vw,6.5rem)] leading-[0.98]">
+          <h1 className="font-display text-[clamp(3rem,2rem+4.2vw,6.5rem)] leading-[0.98]">
             Come home to yourself.
           </h1>
           <p className="mt-5 max-w-[55ch] text-base opacity-90 sm:text-lg">
