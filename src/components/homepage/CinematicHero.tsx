@@ -36,21 +36,26 @@ export function CinematicHero({
       />
 
       <div className="relative w-full px-4 pb-16 pt-32 sm:px-8 sm:pb-20">
-        <div className="max-w-[620px] text-[#f7f1e5]">
-          <h1 className="font-display text-[clamp(3rem,2rem+4.2vw,6.5rem)] leading-[0.98]">
+        <div className="text-[#f7f1e5]">
+          {/* Unconstrained by the 620px copy column below so the fluid
+              clamp always has the full hero width to size against and
+              never wraps, per SSES design intent that this stays one line. */}
+          <h1 className="whitespace-nowrap font-display text-[clamp(1.4rem,1vw+4.6vw,5.5rem)] leading-[0.98]">
             Come home to yourself.
           </h1>
-          <p className="mt-5 max-w-[55ch] text-base opacity-90 sm:text-lg">
-            Saunas, recovery tools, and restorative rituals chosen to help
-            you build a space that feels better to live in.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <SsButton href="/saunas" variant="primary-dark">
-              Explore Saunas
-            </SsButton>
-            <SsButton href="/quiz" variant="outline-dark">
-              Find Your Fit
-            </SsButton>
+          <div className="max-w-[620px]">
+            <p className="mt-5 max-w-[55ch] text-base opacity-90 sm:text-lg">
+              Saunas, recovery tools, and restorative rituals chosen to help
+              you build a space that feels better to live in.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <SsButton href="/saunas" variant="primary-dark">
+                Explore Saunas
+              </SsButton>
+              <SsButton href="/quiz" variant="outline-dark">
+                Find Your Fit
+              </SsButton>
+            </div>
           </div>
         </div>
       </div>

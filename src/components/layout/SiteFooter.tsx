@@ -35,15 +35,17 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-gold/30 bg-charcoal py-16 text-[#f7f1e5]">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-8">
-        <Image
-          src="/Gold-Transparent-LogoWords.png"
-          alt="Soothing Saunas"
-          width={924}
-          height={563}
-          className="h-10 w-auto"
-        />
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-5">
+          <div className="col-span-2 sm:col-span-1">
+            <Image
+              src="/Gold-Transparent-LogoWords.png"
+              alt="Soothing Saunas"
+              width={924}
+              height={563}
+              className="h-14 w-auto"
+            />
+          </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-8 sm:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.heading}>
               <p className="text-xs font-bold uppercase tracking-[0.15em] text-gold">
