@@ -11,6 +11,7 @@ const tabs = [
   { label: "Stylings", href: "/store-settings/stylings" },
   { label: "Templates", href: "/store-settings/templates" },
   { label: "Scrolling Banners", href: "/store-settings/scrolling-banners" },
+  { label: "Site Navigation", href: "/store-settings/site-navigation" },
   { label: "Administrator Security", href: "/store-settings/admin-security" },
 ] as const;
 

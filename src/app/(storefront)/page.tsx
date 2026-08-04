@@ -1,6 +1,7 @@
 import { getCollectionLeadImage } from "@/lib/shopify/collections";
 import { getActiveImage } from "@/lib/images";
 import { getFeaturedProductHandle, HOMEPAGE_FEATURED_SLOT } from "@/lib/featuredProducts";
+import { getVisibleNavItems } from "@/lib/navItems";
 import {
   getProductByHandle,
   getProductsByHandles,
@@ -29,6 +30,7 @@ export default async function Home() {
 
   const [
     heroImage,
+    heroButtons,
     featuredProduct,
     ritualProducts,
     traditionalImage,
@@ -37,6 +39,7 @@ export default async function Home() {
     accessoryImage,
   ] = await Promise.all([
     getActiveImage("homepage-hero"),
+    getVisibleNavItems("hero"),
     featuredHandle ? getProductByHandle(featuredHandle) : Promise.resolve(null),
     getProductsByHandles([
       "starter-sauna-accessory-package",
@@ -91,6 +94,7 @@ export default async function Home() {
           imageUrl={heroImage?.publicUrl ?? null}
           focalX={heroImage?.focalX}
           focalY={heroImage?.focalY}
+          buttons={heroButtons}
         />
       </div>
       <GuidedProductPathways cards={pathwayCards} />

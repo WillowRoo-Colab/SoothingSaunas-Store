@@ -1,13 +1,18 @@
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { getTickerByPlacement } from "@/lib/scrollingTickers";
+import { getVisibleNavItems } from "@/lib/navItems";
 
 export default async function StorefrontLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const homepageTicker = await getTickerByPlacement("homepage-top");
+  const [homepageTicker, headerNavItems, footerNavItems] = await Promise.all([
+    getTickerByPlacement("homepage-top"),
+    getVisibleNavItems("header"),
+    getVisibleNavItems("footer"),
+  ]);
 
   return (
     <>
@@ -17,9 +22,9 @@ export default async function StorefrontLayout({
       >
         Skip to main content
       </a>
-      <SiteHeader ticker={homepageTicker} />
+      <SiteHeader ticker={homepageTicker} navItems={headerNavItems} />
       <div className="flex flex-1 flex-col">{children}</div>
-      <SiteFooter />
+      <SiteFooter navItems={footerNavItems} />
     </>
   );
 }

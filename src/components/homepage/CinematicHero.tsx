@@ -1,14 +1,17 @@
 import Image from "next/image";
 import { SsButton } from "./primitives";
+import type { NavItem } from "@/lib/navItems";
 
 export function CinematicHero({
   imageUrl,
   focalX = 70,
   focalY = 50,
+  buttons,
 }: {
   imageUrl: string | null;
   focalX?: number;
   focalY?: number;
+  buttons: NavItem[];
 }) {
   return (
     <section className="relative mx-auto flex min-h-[560px] max-w-[1440px] items-end overflow-hidden shadow-[0_0_25px_1px_rgba(201,168,106,0.28)] sm:min-h-[76svh] lg:min-h-[88svh] lg:max-h-[920px]">
@@ -49,12 +52,15 @@ export function CinematicHero({
               you build a space that feels better to live in.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <SsButton href="/saunas" variant="primary-dark">
-                Explore Saunas
-              </SsButton>
-              <SsButton href="/quiz" variant="outline-dark">
-                Find Your Fit
-              </SsButton>
+              {buttons.map((button) => (
+                <SsButton
+                  key={button.id}
+                  href={button.href}
+                  variant={button.variant ?? "primary-dark"}
+                >
+                  {button.title}
+                </SsButton>
+              ))}
             </div>
           </div>
         </div>

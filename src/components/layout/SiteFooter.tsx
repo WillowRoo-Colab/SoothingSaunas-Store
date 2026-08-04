@@ -1,35 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { NavItem, FooterGroupLabel } from "@/lib/navItems";
 
-// Every other footer link is still a decorative placeholder (see SSES-010 —
-// no dead links yet since the real pages don't exist). "About Us" and
-// "Admin" are real destinations today; Admin stays visually dimmed since
-// it's not a guest-facing destination.
-const LINK_HREFS: Partial<Record<string, { href: string; dimmed?: boolean }>> = {
-  "About Us": { href: "/about" },
-  Admin: { href: "/store-settings", dimmed: true },
-};
+// Fixed, hardcoded order — matches the footer's grid-cols-5 layout (logo +
+// these 4 link columns, left to right). Item order/destinations/visibility
+// are admin-editable (Site Navigation → Footer); the 4 columns themselves
+// are not.
+const FOOTER_GROUPS: FooterGroupLabel[] = ["Shop", "Learn", "Support", "Company"];
 
-const COLUMNS = [
-  {
-    heading: "Shop",
-    links: ["Saunas", "Cold & Water", "Wellness", "Accessories"],
-  },
-  {
-    heading: "Learn",
-    links: ["Buying Guides", "Wellness Education", "Find Your Fit Quiz"],
-  },
-  {
-    heading: "Support",
-    links: ["Contact", "Shipping", "Returns", "Warranty"],
-  },
-  {
-    heading: "Company",
-    links: ["About Us", "Privacy", "Terms", "Accessibility", "Sitemap", "Admin"],
-  },
-] as const;
-
-export function SiteFooter() {
+export function SiteFooter({ navItems }: { navItems: NavItem[] }) {
   const year = new Date().getFullYear();
 
   return (
@@ -46,35 +25,28 @@ export function SiteFooter() {
             />
           </div>
 
-          {COLUMNS.map((col) => (
-            <div key={col.heading}>
+          {FOOTER_GROUPS.map((group) => (
+            <div key={group}>
               <p className="text-xs font-bold uppercase tracking-[0.15em] text-gold">
-                {col.heading}
+                {group}
               </p>
               <ul className="mt-4 space-y-2 text-sm opacity-85">
-                {col.links.map((link) => {
-                  const entry = LINK_HREFS[link];
-                  return (
-                    <li key={link}>
-                      {entry ? (
-                        <Link
-                          href={entry.href}
-                          className={
-                            entry.dimmed
-                              ? "opacity-60 transition-opacity hover:text-gold hover:opacity-100"
-                              : "transition-colors hover:text-gold"
-                          }
-                        >
-                          {link}
-                        </Link>
-                      ) : (
-                        <span className="cursor-default hover:text-gold">
-                          {link}
-                        </span>
-                      )}
+                {navItems
+                  .filter((item) => item.groupLabel === group)
+                  .map((item) => (
+                    <li key={item.id}>
+                      <Link
+                        href={item.href}
+                        className={
+                          item.dimmed
+                            ? "opacity-60 transition-opacity hover:text-gold hover:opacity-100"
+                            : "transition-colors hover:text-gold"
+                        }
+                      >
+                        {item.title}
+                      </Link>
                     </li>
-                  );
-                })}
+                  ))}
               </ul>
             </div>
           ))}
