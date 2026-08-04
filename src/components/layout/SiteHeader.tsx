@@ -14,22 +14,6 @@ const ANNOUNCEMENTS = [
   "Wellness guidance without the pressure.",
 ];
 
-// "Saunas" is a hover mega-menu trigger, not a plain link — it stays
-// hardcoded and isn't part of the admin-editable Site Navigation items
-// (see src/lib/navItems.ts). Every other header item comes from the
-// `navItems` prop, fetched live in (storefront)/layout.tsx.
-const SAUNAS_TRIGGER_LABEL = "Saunas";
-
-const SAUNA_MEGA_MENU = {
-  "Shop by Type": ["Infrared", "Traditional", "Steam", "Outdoor", "Specialty"],
-  "Shop by Space": ["One Person", "Two Person", "Family", "Indoor", "Outdoor"],
-  "Start Here": [
-    "Compare Sauna Types",
-    "Sauna Buying Guide",
-    "Find Your Fit Quiz",
-  ],
-} as const;
-
 const ANNOUNCEMENT_HEIGHT = 36; // h-9
 // Header bar is a flat, slightly taller height (was 84) so the shrunk logo
 // has more room to breathe at rest.
@@ -197,40 +181,76 @@ export function SiteHeader({
                 }`}
               >
 
-                <li
-                  className="relative"
-                  onMouseEnter={() => setOpenMenu(SAUNAS_TRIGGER_LABEL)}
-                >
-                  <button
-                    type="button"
-                    aria-expanded={openMenu === SAUNAS_TRIGGER_LABEL}
-                    onClick={() =>
-                      setOpenMenu((current) =>
-                        current === SAUNAS_TRIGGER_LABEL
-                          ? null
-                          : SAUNAS_TRIGGER_LABEL
-                      )
-                    }
-                    className="cursor-default py-2 transition-colors hover:text-gold focus-visible:text-gold"
-                  >
-                    {SAUNAS_TRIGGER_LABEL}
-                  </button>
-                </li>
-
-                {navItems.map((item) => (
-                  <li
-                    key={item.id}
-                    className="relative"
-                    onMouseEnter={() => setOpenMenu(null)}
-                  >
-                    <Link
-                      href={item.href}
-                      className="block py-2 transition-colors hover:text-gold focus-visible:text-gold"
+                {navItems.map((item) =>
+                  item.isDropdown ? (
+                    <li
+                      key={item.id}
+                      className="relative"
+                      onMouseEnter={() => setOpenMenu(item.id)}
                     >
-                      {item.title}
-                    </Link>
-                  </li>
-                ))}
+                      <button
+                        type="button"
+                        aria-expanded={openMenu === item.id}
+                        onClick={() =>
+                          setOpenMenu((current) =>
+                            current === item.id ? null : item.id
+                          )
+                        }
+                        className="cursor-default py-2 transition-colors hover:text-gold focus-visible:text-gold"
+                      >
+                        {item.title}
+                      </button>
+
+                      {openMenu === item.id ? (
+                        <div className="absolute left-1/2 top-full z-10 -translate-x-1/2 rounded-md border border-gold/20 bg-charcoal shadow-lg">
+                          <div
+                            className="grid gap-8 px-8 py-8"
+                            style={{
+                              gridTemplateColumns: `repeat(${item.columnCount ?? 1}, max-content)`,
+                            }}
+                          >
+                            {item.columnHeadings.map((heading, colIndex) => (
+                              <div key={colIndex}>
+                                <p className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.15em] text-gold">
+                                  {heading}
+                                </p>
+                                <ul className="mt-3 space-y-2 text-sm text-[#f7f1e5]">
+                                  {item.children
+                                    .filter(
+                                      (child) => child.columnIndex === colIndex + 1
+                                    )
+                                    .map((child) => (
+                                      <li key={child.id}>
+                                        <Link
+                                          href={child.href}
+                                          className="block whitespace-nowrap opacity-90 transition-opacity hover:opacity-100 hover:text-gold"
+                                        >
+                                          {child.title}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </li>
+                  ) : (
+                    <li
+                      key={item.id}
+                      className="relative"
+                      onMouseEnter={() => setOpenMenu(null)}
+                    >
+                      <Link
+                        href={item.href}
+                        className="block py-2 transition-colors hover:text-gold focus-visible:text-gold"
+                      >
+                        {item.title}
+                      </Link>
+                    </li>
+                  )
+                )}
               </ul>
             </nav>
 
@@ -292,46 +312,57 @@ export function SiteHeader({
           {mobileOpen ? (
             <div className="border-t border-gold/20 bg-charcoal px-6 py-6 min-[1200px]:hidden">
               <ul className="flex flex-col gap-4 text-base font-medium text-[#f7f1e5]">
-                <li>
-                  <span className="cursor-default opacity-90">
-                    {SAUNAS_TRIGGER_LABEL}
-                  </span>
-                </li>
                 {navItems.map((item) => (
                   <li key={item.id}>
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="opacity-90 transition-opacity hover:opacity-100 hover:text-gold"
-                    >
-                      {item.title}
-                    </Link>
+                    {item.isDropdown ? (
+                      <div>
+                        <span className="cursor-default opacity-90">
+                          {item.title}
+                        </span>
+                        {/* Always expanded, stacked vertically — the best
+                            layout for a narrow screen regardless of the
+                            desktop column count; no accordion state. */}
+                        <div className="mt-2 flex flex-col gap-4 pl-4">
+                          {item.columnHeadings.map((heading, colIndex) => {
+                            const links = item.children.filter(
+                              (child) => child.columnIndex === colIndex + 1
+                            );
+                            if (links.length === 0) return null;
+                            return (
+                              <div key={colIndex}>
+                                <p className="text-xs font-bold uppercase tracking-[0.15em] text-gold">
+                                  {heading}
+                                </p>
+                                <ul className="mt-2 flex flex-col gap-2">
+                                  {links.map((child) => (
+                                    <li key={child.id}>
+                                      <Link
+                                        href={child.href}
+                                        onClick={() => setMobileOpen(false)}
+                                        className="text-sm opacity-90 transition-opacity hover:opacity-100 hover:text-gold"
+                                      >
+                                        {child.title}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className="opacity-90 transition-opacity hover:opacity-100 hover:text-gold"
+                      >
+                        {item.title}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
-            </div>
-          ) : null}
-
-          {openMenu === "Saunas" ? (
-            <div className="border-t border-gold/20 bg-charcoal">
-              <div className="mx-auto grid max-w-[640px] grid-cols-3 gap-8 px-8 py-8">
-                {Object.entries(SAUNA_MEGA_MENU).map(([heading, items]) => (
-                  <div key={heading}>
-                    <p className="text-xs font-bold uppercase tracking-[0.15em] text-gold">
-                      {heading}
-                    </p>
-                    <ul className="mt-3 space-y-2 text-sm text-[#f7f1e5]">
-                      {items.map((label) => (
-                        <li key={label}>
-                          <span className="cursor-default opacity-90 transition-opacity hover:opacity-100 hover:text-gold">
-                            {label}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
             </div>
           ) : null}
         </header>
