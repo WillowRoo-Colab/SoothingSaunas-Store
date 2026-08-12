@@ -14,12 +14,17 @@ export default async function LoginPage({
       <p className="mt-1 text-sm text-charcoal/70">Admin sign-in</p>
 
       {error ? (
-        <p
-          role="alert"
-          className="mt-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700"
-        >
-          {error}
-        </p>
+        <div role="alert" className="mt-4 flex flex-col gap-2">
+          <p className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </p>
+          <p className="rounded border border-charcoal/20 bg-charcoal/5 px-3 py-2 text-xs text-charcoal/70">
+            This area is restricted to authorized users only. Any attempt to
+            gain unauthorized access is prohibited. Sign-in attempts are
+            logged, including IP address, approximate location, and
+            device/browser information.
+          </p>
+        </div>
       ) : null}
 
       <form action={signIn} className="mt-6 flex flex-col gap-4">

@@ -8,12 +8,14 @@ import {
   isLoginRateLimited,
   recordLoginAttempt,
   getClientIp,
+  getLoginAttemptContext,
 } from "@/lib/auth/rateLimit";
 
 export async function signIn(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
   const ip = await getClientIp();
+  const context = await getLoginAttemptContext();
 
   if (await isLoginRateLimited(email, ip)) {
     redirect(
@@ -26,11 +28,12 @@ export async function signIn(formData: FormData) {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  await recordLoginAttempt(email, ip, !error);
+  await recordLoginAttempt(email, ip, !error, context);
 
   if (error) {
     // Deliberately the same generic message a wrong-password error would
-    // give — never reveal whether the account exists.
+    // give — never reveal whether the account exists. The page itself adds
+    // a deterrent notice below this for any failed attempt.
     redirect(
       `/store-settings/login?error=${encodeURIComponent(
         "Incorrect email or password."

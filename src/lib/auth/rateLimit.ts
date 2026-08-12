@@ -17,6 +17,28 @@ export async function getClientIp(): Promise<string> {
   return forwardedFor?.split(",")[0]?.trim() || "unknown";
 }
 
+export interface LoginAttemptContext {
+  userAgent: string | null;
+  ipCountry: string | null;
+  ipRegion: string | null;
+  ipCity: string | null;
+}
+
+// Vercel's edge sets these geo headers on every production request (never
+// present in local dev, and often absent/inaccurate for Tor/VPN traffic —
+// this is best-effort forensic context, not reliable attribution).
+export async function getLoginAttemptContext(): Promise<LoginAttemptContext> {
+  const headerList = await headers();
+  const city = headerList.get("x-vercel-ip-city");
+
+  return {
+    userAgent: headerList.get("user-agent"),
+    ipCountry: headerList.get("x-vercel-ip-country"),
+    ipRegion: headerList.get("x-vercel-ip-country-region"),
+    ipCity: city ? decodeURIComponent(city) : null,
+  };
+}
+
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
@@ -54,13 +76,21 @@ export async function isLoginRateLimited(email: string, ip: string): Promise<boo
 export async function recordLoginAttempt(
   email: string,
   ip: string,
-  succeeded: boolean
+  succeeded: boolean,
+  context: LoginAttemptContext
 ): Promise<void> {
   const supabase = createAdminClient();
 
+  const contextColumns = {
+    user_agent: context.userAgent,
+    ip_country: context.ipCountry,
+    ip_region: context.ipRegion,
+    ip_city: context.ipCity,
+  };
+
   const { error } = await supabase.from("admin_login_attempts").insert([
-    { identifier: normalizeEmail(email), kind: "email", succeeded },
-    { identifier: `ip:${ip}`, kind: "ip", succeeded },
+    { identifier: normalizeEmail(email), kind: "email", succeeded, ...contextColumns },
+    { identifier: `ip:${ip}`, kind: "ip", succeeded, ...contextColumns },
   ]);
 
   if (error) throw error;

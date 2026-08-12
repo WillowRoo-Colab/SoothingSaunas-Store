@@ -8,6 +8,13 @@
 
 export type TemplateCategory = "collections" | "products" | "promos-ads";
 
+/** A live Shopify record's handle/title, used to populate the preview
+ * modal's variable-segment field as a dropdown instead of free text. */
+export interface HandleOption {
+  handle: string;
+  title: string;
+}
+
 export interface TemplateEntry {
   id: string;
   label: string;

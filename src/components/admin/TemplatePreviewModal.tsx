@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { TemplateEntry } from "@/lib/templates";
+import type { HandleOption, TemplateEntry } from "@/lib/templates";
 
 // The iframe just points at the real, live storefront route — during
 // `npm run dev` Next.js's own Fast Refresh keeps it current automatically
@@ -10,13 +10,15 @@ import type { TemplateEntry } from "@/lib/templates";
 // redeploy), so "Reload" forces a fresh fetch instead.
 export function TemplatePreviewModal({
   template,
+  handleOptions,
   onClose,
 }: {
   template: TemplateEntry;
+  handleOptions?: HandleOption[];
   onClose: () => void;
 }) {
   const [variableValue, setVariableValue] = useState(
-    template.variableSegment?.placeholder ?? ""
+    handleOptions?.[0]?.handle ?? template.variableSegment?.placeholder ?? ""
   );
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -46,13 +48,28 @@ export function TemplatePreviewModal({
                 <label htmlFor="preview-variable" className="text-xs font-medium text-charcoal/70">
                   {template.variableSegment.label}
                 </label>
-                <input
-                  id="preview-variable"
-                  value={variableValue}
-                  onChange={(e) => setVariableValue(e.target.value)}
-                  placeholder={template.variableSegment.placeholder}
-                  className="rounded border border-silver px-2 py-1 text-sm"
-                />
+                {handleOptions && handleOptions.length > 0 ? (
+                  <select
+                    id="preview-variable"
+                    value={variableValue}
+                    onChange={(e) => setVariableValue(e.target.value)}
+                    className="rounded border border-silver px-2 py-1 text-sm"
+                  >
+                    {handleOptions.map((option) => (
+                      <option key={option.handle} value={option.handle}>
+                        {option.title} ({option.handle})
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    id="preview-variable"
+                    value={variableValue}
+                    onChange={(e) => setVariableValue(e.target.value)}
+                    placeholder={template.variableSegment.placeholder}
+                    className="rounded border border-silver px-2 py-1 text-sm"
+                  />
+                )}
               </div>
             ) : null}
 

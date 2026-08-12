@@ -1,15 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import type { TemplateEntry } from "@/lib/templates";
+import type { HandleOption, TemplateEntry } from "@/lib/templates";
 import { TemplatePreviewModal } from "./TemplatePreviewModal";
 
 export function TemplateGallery({
   categoryLabel,
   templates,
+  handleOptions,
 }: {
   categoryLabel: string;
   templates: TemplateEntry[];
+  /** Live Shopify handles for the preview modal's variable-segment field,
+   * so the admin can pick a real collection/product instead of typing a
+   * handle from memory. Omitted for categories with no handle-based
+   * records (e.g. Promos/Ads). */
+  handleOptions?: HandleOption[];
 }) {
   const [openTemplate, setOpenTemplate] = useState<TemplateEntry | null>(null);
 
@@ -49,7 +55,11 @@ export function TemplateGallery({
       </div>
 
       {openTemplate ? (
-        <TemplatePreviewModal template={openTemplate} onClose={() => setOpenTemplate(null)} />
+        <TemplatePreviewModal
+          template={openTemplate}
+          handleOptions={handleOptions}
+          onClose={() => setOpenTemplate(null)}
+        />
       ) : null}
     </>
   );
