@@ -18,8 +18,9 @@ export default async function HeaderNavPage() {
       </div>
       <p className="mt-1 text-sm text-charcoal/70">
         A plain item links directly. A dropdown item opens a menu of its own
-        instead — check &quot;Opens a dropdown menu&quot; on an item, then use
-        &quot;Manage submenu&quot; to add its links.
+        instead — click &quot;Edit&quot; on an item and check &quot;Opens a
+        dropdown menu&quot; to switch it, then use &quot;Manage
+        submenu&quot; (shown once it&apos;s a dropdown) to add its links.
       </p>
 
       <div className="mt-6">
