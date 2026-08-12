@@ -22,7 +22,7 @@ export function ProductGridCard({
   // block. Solid gold border (no glow/shadow) brightens on hover; the image
   // itself supplies the hover feedback via a slight zoom (below).
   const CARD_CLASS =
-    "rounded-lg border border-gold/30 bg-charcoal850 transition-colors duration-300 hover:border-gold/70";
+    "rounded-lg border border-gold/30 bg-charcoal-900 transition-colors duration-300 hover:border-gold/70";
 
   if (layout === "list") {
     return (
