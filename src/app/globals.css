@@ -61,3 +61,65 @@ body {
     animation: none;
   }
 }
+
+/* Gold shimmer CTA (legacy-shopify-theme/snippets/my-goldbuybutton.liquid),
+   ported for the Enhanced Product Template's "Add to Order" button. The
+   border lives on a separate inset element so the shimmer sweep can clip to
+   it without affecting the button's own background/text. */
+.gold-cta {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.gold-cta__border {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--color-gold);
+  border-radius: inherit;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gold-cta__border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(201, 168, 106, 0) 0%,
+    rgba(201, 168, 106, 0.95) 80%,
+    rgba(201, 168, 106, 0) 100%
+  );
+  transform: skewX(-20deg);
+}
+
+.gold-cta:not(:disabled):hover {
+  color: var(--color-charcoal);
+  transition: color 1.3s ease;
+}
+
+.gold-cta:not(:disabled):hover .gold-cta__border {
+  background: rgba(201, 168, 106, 0.85);
+}
+
+.gold-cta:not(:disabled):hover .gold-cta__border::before {
+  animation: gold-cta-shimmer 1.8s forwards;
+}
+
+.gold-cta:not(:disabled):active .gold-cta__border {
+  border-color: var(--color-gold-600);
+}
+
+@keyframes gold-cta-shimmer {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}

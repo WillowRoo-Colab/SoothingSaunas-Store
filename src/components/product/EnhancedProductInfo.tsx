@@ -30,77 +30,82 @@ export function EnhancedProductInfo({
         </div>
       ) : null}
 
-      {product.vendor ? (
-        <p className="text-sm text-cream/70">
-          by{" "}
-          <span className="font-medium text-cream">{product.vendor}</span>
-        </p>
-      ) : null}
+      {/* Lighter-toned card than the page's base charcoal — title, collection,
+          and vendor step down in size and indent further right each row,
+          same font family each already used before this reorder. */}
+      <div className="rounded-2xl border border-gold/20 bg-charcoal-900 p-6 sm:p-8">
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">
+          {product.title}
+        </h1>
 
-      <h1 className="mt-2 font-display text-2xl font-semibold sm:text-3xl">
-        {product.title}
-      </h1>
+        {product.collectionTitle ? (
+          <p className="ml-4 mt-2 font-display text-lg italic text-gold">
+            from the {product.collectionTitle}
+          </p>
+        ) : null}
 
-      {product.collectionTitle ? (
-        <p className="mt-1 font-display text-lg italic text-gold">
-          from the {product.collectionTitle}
-        </p>
-      ) : null}
+        {product.vendor ? (
+          <p className="ml-8 mt-2 text-sm text-cream/70">
+            by{" "}
+            <span className="font-medium text-cream">{product.vendor}</span>
+          </p>
+        ) : null}
 
-      <Separator />
+        <Separator />
 
-      {product.descriptionHtml ? (
-        <div
-          className="text-[15px] leading-relaxed text-cream/90 [&_p]:mb-4 [&_p:last-child]:mb-0"
-          dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+        {product.descriptionHtml ? (
+          <div
+            className="text-[15px] leading-relaxed text-cream/90 [&_p]:mb-4 [&_p:last-child]:mb-0"
+            dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+          />
+        ) : null}
+
+        {product.capacity ? (
+          <p className="mt-4 text-sm text-cream/90">
+            <span className="font-semibold text-cream">Seating Capacity</span>:
+            up to <span className="font-semibold text-cream">{product.capacity}</span>{" "}
+            people
+          </p>
+        ) : null}
+
+        {product.heatStyle ? (
+          <p className="mt-2 text-sm text-cream/90">
+            <span className="font-semibold text-cream">Heating Style</span>:{" "}
+            {product.heatStyle}
+          </p>
+        ) : null}
+
+        {product.specSheetUrl ? (
+          <a
+            href={product.specSheetUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-block text-sm font-medium text-gold underline decoration-gold/40 underline-offset-4 hover:decoration-gold"
+          >
+            View Product Specifications
+          </a>
+        ) : null}
+
+        {product.heaterOptions.length > 0 ? (
+          <div className="mt-4 text-sm text-cream/90">
+            <p className="font-semibold text-cream">Available Heater Options</p>
+            <ul className="mt-2 list-inside list-disc space-y-1">
+              {product.heaterOptions.map((option) => (
+                <li key={option}>{option}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <Separator />
+
+        <ProductAddonsAndPrice
+          basePrice={product.price}
+          compareAtPrice={product.compareAtPrice}
+          currencyCode={product.currencyCode}
+          addons={addons}
         />
-      ) : null}
-
-      {product.capacity ? (
-        <p className="mt-4 text-sm text-cream/90">
-          <span className="font-semibold text-cream">Seating Capacity</span>:
-          up to <span className="font-semibold text-cream">{product.capacity}</span>{" "}
-          people
-        </p>
-      ) : null}
-
-      {product.heatStyle ? (
-        <p className="mt-2 text-sm text-cream/90">
-          <span className="font-semibold text-cream">Heating Style</span>:{" "}
-          {product.heatStyle}
-        </p>
-      ) : null}
-
-      {product.specSheetUrl ? (
-        <a
-          href={product.specSheetUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-block text-sm font-medium text-gold underline decoration-gold/40 underline-offset-4 hover:decoration-gold"
-        >
-          View Product Specifications
-        </a>
-      ) : null}
-
-      {product.heaterOptions.length > 0 ? (
-        <div className="mt-4 text-sm text-cream/90">
-          <p className="font-semibold text-cream">Available Heater Options</p>
-          <ul className="mt-2 list-inside list-disc space-y-1">
-            {product.heaterOptions.map((option) => (
-              <li key={option}>{option}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      <Separator />
-
-      <ProductAddonsAndPrice
-        basePrice={product.price}
-        compareAtPrice={product.compareAtPrice}
-        currencyCode={product.currencyCode}
-        addons={addons}
-      />
+      </div>
     </div>
   );
 }

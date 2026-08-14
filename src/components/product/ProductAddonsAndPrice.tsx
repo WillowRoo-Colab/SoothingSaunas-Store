@@ -127,9 +127,10 @@ export function ProductAddonsAndPrice({
           aria-disabled="true"
           aria-label={resolveContent(devContent.addToOrderPending)}
           title={resolveContent(devContent.addToOrderPending)}
-          className="inline-flex min-h-12 cursor-not-allowed items-center justify-center rounded-full border-2 border-gold/50 px-8 text-sm font-bold tracking-wide text-gold/50"
+          className="gold-cta inline-flex min-h-12 items-center justify-center rounded-full px-8 text-sm font-bold tracking-wide text-gold disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Add to Order
+          <span className="relative z-[1]">Add to Order</span>
+          <span className="gold-cta__border" aria-hidden />
         </button>
       </div>
     </>
