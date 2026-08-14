@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import type { ScrollingTicker as ScrollingTickerData } from "@/lib/scrollingTickers";
 import { ScrollingTicker } from "@/components/site/ScrollingTicker";
 import type { NavItem } from "@/lib/navItems";
+import { useCart } from "@/components/cart/CartProvider";
 
 const ANNOUNCEMENTS = [
   "Questions before you choose? Call (504) 285-9552.",
@@ -72,6 +73,7 @@ export function SiteHeader({
   const [scrolled, setScrolled] = useState(!animated);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { cart, openCart } = useCart();
   const logoRef = useRef<HTMLDivElement>(null);
   const spacerRef = useRef<HTMLDivElement>(null);
 
@@ -257,7 +259,18 @@ export function SiteHeader({
             <div className="hidden items-center gap-5 text-xs font-bold text-[#f7f1e5] min-[1200px]:flex">
               <span className="cursor-default opacity-70">Search</span>
               <span className="cursor-default opacity-70">Account</span>
-              <span className="cursor-default opacity-70">Cart</span>
+              <button
+                type="button"
+                onClick={openCart}
+                className="relative transition-opacity hover:opacity-80"
+              >
+                Cart
+                {cart && cart.totalQuantity > 0 ? (
+                  <span className="absolute -right-3.5 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-charcoal">
+                    {cart.totalQuantity}
+                  </span>
+                ) : null}
+              </button>
               <span className="cursor-default opacity-70">Support</span>
             </div>
 

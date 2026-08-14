@@ -22,6 +22,17 @@ export function EnhancedProductInfo({
   addons: ProductAddon[];
   ticker: ScrollingTickerData | null;
 }) {
+  // custom.show_collection / custom.show_vendor (Enhanced Product Template
+  // only) — each row is fully omitted, not just visually hidden, so the
+  // remaining rows and the separator below reflow upward into the freed
+  // space rather than leaving a gap. Collection always sits directly under
+  // the title when shown, so it's the fixed second row; vendor steps in one
+  // further (ml-8) only when collection is also visible above it, otherwise
+  // it takes collection's place as the second row (ml-4).
+  const collectionVisible = product.showCollection && Boolean(product.collectionTitle);
+  const vendorVisible = product.showVendor && Boolean(product.vendor);
+  const vendorIndentClass = collectionVisible ? "ml-8" : "ml-4";
+
   return (
     <div className="text-cream">
       {ticker ? (
@@ -38,14 +49,14 @@ export function EnhancedProductInfo({
           {product.title}
         </h1>
 
-        {product.collectionTitle ? (
+        {collectionVisible ? (
           <p className="ml-4 mt-2 font-display text-lg italic text-gold">
             from the {product.collectionTitle}
           </p>
         ) : null}
 
-        {product.vendor ? (
-          <p className="ml-8 mt-2 text-sm text-cream/70">
+        {vendorVisible ? (
+          <p className={`${vendorIndentClass} mt-2 text-sm text-cream/70`}>
             by{" "}
             <span className="font-medium text-cream">{product.vendor}</span>
           </p>
@@ -100,10 +111,12 @@ export function EnhancedProductInfo({
         <Separator />
 
         <ProductAddonsAndPrice
+          variantId={product.firstVariantId}
           basePrice={product.price}
           compareAtPrice={product.compareAtPrice}
           currencyCode={product.currencyCode}
           addons={addons}
+          showQuantitySelector={product.showQuantitySelector}
         />
       </div>
     </div>

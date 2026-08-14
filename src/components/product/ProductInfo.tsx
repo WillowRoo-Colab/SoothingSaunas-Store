@@ -1,14 +1,7 @@
 import type { ProductDetail } from "@/lib/shopify/products";
 import type { ScrollingTicker as ScrollingTickerData } from "@/lib/scrollingTickers";
 import { ScrollingTicker } from "@/components/site/ScrollingTicker";
-import { devContent, resolveContent } from "@/lib/dev-content";
-
-function formatMoney(amount: string, currencyCode: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currencyCode,
-  }).format(Number(amount));
-}
+import { ProductBuyRow } from "./ProductBuyRow";
 
 function Separator() {
   return <div aria-hidden className="my-5 h-px w-full bg-gold/30" />;
@@ -21,10 +14,6 @@ export function ProductInfo({
   product: ProductDetail;
   ticker: ScrollingTickerData | null;
 }) {
-  const hasCompareAt =
-    product.compareAtPrice !== null &&
-    Number(product.compareAtPrice) > Number(product.price);
-
   return (
     <div className="text-cream">
       {product.vendor ? (
@@ -98,29 +87,13 @@ export function ProductInfo({
 
       <Separator />
 
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="font-display text-xl font-semibold text-cream sm:text-2xl">
-            {formatMoney(product.price, product.currencyCode)}
-          </p>
-          {hasCompareAt ? (
-            <p className="text-sm text-cream/50 line-through">
-              {formatMoney(product.compareAtPrice!, product.currencyCode)}
-            </p>
-          ) : null}
-        </div>
-
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          aria-label={resolveContent(devContent.addToOrderPending)}
-          title={resolveContent(devContent.addToOrderPending)}
-          className="inline-flex min-h-12 cursor-not-allowed items-center justify-center rounded-full border-2 border-gold/50 px-8 text-sm font-bold tracking-wide text-gold/50"
-        >
-          Add to Order
-        </button>
-      </div>
+      <ProductBuyRow
+        variantId={product.firstVariantId}
+        price={product.price}
+        compareAtPrice={product.compareAtPrice}
+        currencyCode={product.currencyCode}
+        showQuantitySelector={product.showQuantitySelector}
+      />
     </div>
   );
 }

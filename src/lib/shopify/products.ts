@@ -89,6 +89,12 @@ export interface ProductDetail {
   heatStyle: string | null;
   specSheetUrl: string | null;
   heaterOptions: string[];
+  /** `custom.show_qty` boolean metafield — hides the PDP quantity selector when false/unset. */
+  showQuantitySelector: boolean;
+  /** `custom.show_vendor` boolean metafield — Enhanced Product Template only. */
+  showVendor: boolean;
+  /** `custom.show_collection` boolean metafield — Enhanced Product Template only. */
+  showCollection: boolean;
 }
 
 type ProductDetailData = NonNullable<ProductDetailQueryData["product"]>;
@@ -113,6 +119,9 @@ export async function getProductDetailByHandle(
   const heatStyle = findMetafield(product.metafields, "heat_style");
   const specSheet = findMetafield(product.metafields, "productspecs");
   const heaterOptionsField = findMetafield(product.metafields, "eheater_options");
+  const showQtyField = findMetafield(product.metafields, "show_qty");
+  const showVendorField = findMetafield(product.metafields, "show_vendor");
+  const showCollectionField = findMetafield(product.metafields, "show_collection");
 
   let heaterOptions: string[] = [];
   if (heaterOptionsField?.value) {
@@ -151,6 +160,9 @@ export async function getProductDetailByHandle(
     heatStyle: heatStyle?.value ?? null,
     specSheetUrl: specSheet?.reference?.url ?? null,
     heaterOptions,
+    showQuantitySelector: showQtyField?.value === "true",
+    showVendor: showVendorField?.value === "true",
+    showCollection: showCollectionField?.value === "true",
   };
 }
 

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { ProductAddon } from "@/lib/shopify/products";
-import { devContent, resolveContent } from "@/lib/dev-content";
+import { useCart } from "@/components/cart/CartProvider";
+import { QuantitySelector } from "./QuantitySelector";
 
 function formatMoney(amount: number, currencyCode: string) {
   return new Intl.NumberFormat("en-US", {
@@ -33,17 +34,23 @@ function FlameCheckbox({ checked }: { checked: boolean }) {
 }
 
 export function ProductAddonsAndPrice({
+  variantId,
   basePrice,
   compareAtPrice,
   currencyCode,
   addons,
+  showQuantitySelector,
 }: {
+  variantId: string | null;
   basePrice: string;
   compareAtPrice: string | null;
   currencyCode: string;
   addons: ProductAddon[];
+  showQuantitySelector: boolean;
 }) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [quantity, setQuantity] = useState(1);
+  const { addItems, isPending } = useCart();
 
   function toggle(id: string) {
     setChecked((current) => {
@@ -54,10 +61,20 @@ export function ProductAddonsAndPrice({
     });
   }
 
-  const addonsTotal = addons
-    .filter((addon) => checked.has(addon.id))
-    .reduce((sum, addon) => sum + addon.finalPrice, 0);
-  const total = Number(basePrice) + addonsTotal;
+  const selectedAddons = addons.filter((addon) => checked.has(addon.id));
+  const addonsTotal = selectedAddons.reduce((sum, addon) => sum + addon.finalPrice, 0);
+  const total = (Number(basePrice) + addonsTotal) * quantity;
+
+  function handleAddToOrder() {
+    if (!variantId) return;
+    addItems([
+      { merchandiseId: variantId, quantity },
+      ...selectedAddons.map((addon) => ({
+        merchandiseId: addon.variantId,
+        quantity,
+      })),
+    ]);
+  }
 
   return (
     <>
@@ -109,6 +126,13 @@ export function ProductAddonsAndPrice({
 
       <div className="my-5 h-px w-full bg-gold/30" aria-hidden />
 
+      {showQuantitySelector ? (
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-sm text-cream/70">Quantity</span>
+          <QuantitySelector quantity={quantity} onChange={setQuantity} />
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="font-display text-xl font-semibold text-cream sm:text-2xl">
@@ -116,20 +140,18 @@ export function ProductAddonsAndPrice({
           </p>
           {compareAtPrice !== null && Number(compareAtPrice) > Number(basePrice) ? (
             <p className="text-sm text-cream/50 line-through">
-              {formatMoney(Number(compareAtPrice), currencyCode)}
+              {formatMoney(Number(compareAtPrice) * quantity, currencyCode)}
             </p>
           ) : null}
         </div>
 
         <button
           type="button"
-          disabled
-          aria-disabled="true"
-          aria-label={resolveContent(devContent.addToOrderPending)}
-          title={resolveContent(devContent.addToOrderPending)}
+          onClick={handleAddToOrder}
+          disabled={isPending || !variantId}
           className="gold-cta inline-flex min-h-12 items-center justify-center rounded-full px-8 text-sm font-bold tracking-wide text-gold disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <span className="relative z-[1]">Add to Order</span>
+          <span className="relative z-[1]">{isPending ? "Adding…" : "Add to Order"}</span>
           <span className="gold-cta__border" aria-hidden />
         </button>
       </div>

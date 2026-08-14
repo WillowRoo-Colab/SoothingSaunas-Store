@@ -107,6 +107,9 @@ export const PRODUCT_DETAIL_BY_HANDLE_QUERY = `#graphql
           { namespace: "custom", key: "heat_style" }
           { namespace: "custom", key: "productspecs" }
           { namespace: "custom", key: "eheater_options" }
+          { namespace: "custom", key: "show_qty" }
+          { namespace: "custom", key: "show_vendor" }
+          { namespace: "custom", key: "show_collection" }
         ]
       ) {
         key
